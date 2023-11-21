@@ -1,13 +1,42 @@
+.post-container {
+  background-color: #fff;
+  border: 1px solid #dddfe2;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: center;
+}
 
-form{
-    margin-left: 160px;
-    width: 120%;
-    margin-top: 60px;
-    justify-content: center;
+h3 {
+  color: #1877f2;
 }
-.input-group{
-    margin-top: 20px;
+
+.form-group {
+  margin-bottom: 20px;
 }
-input.ng-invalid.ng-touched, textarea.ng-invalid.ng-touched{
-    border: 1px solid rgb(255, 89, 0);
+
+.preview-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+.button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.btn-primary {
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #1466c1;
 }

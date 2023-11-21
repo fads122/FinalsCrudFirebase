@@ -1,0 +1,53 @@
+.facebook-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.facebook-login-box {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.facebook-input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.facebook-button {
+  background-color: #1877f2;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.facebook-button:hover {
+  background-color: #115293;
+}
+
+.facebook-register-link {
+  margin-top: 15px;
+  color: #65676b;
+  font-size: 14px;
+}
+
+.facebook-register-link a {
+  color: #1877f2;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.facebook-register-link a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,7 @@
+/* CSS to change the size of the image */
+table.table img {
+    width: 100px; /* Set the desired width */
+    height: 100px; /* Set the desired height */
+    /* You can adjust the width and height values as per your requirements */
+  }
+  

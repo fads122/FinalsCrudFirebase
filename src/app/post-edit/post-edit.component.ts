@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PostService } from '../post-service';
 import { Post } from '../post.model';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-post-edit',
@@ -11,29 +12,70 @@ import { Router } from '@angular/router';
 })
 export class PostEditComponent implements OnInit {
   form!: FormGroup;
-  constructor(private postService: PostService, private router: Router) {
-  }
+  index: number = 0;
+  editMode = false;
 
-
+  constructor(private postService: PostService, private router: Router, private actRoute: ActivatedRoute, private authService: AuthService) {}
   ngOnInit(): void {
+
+    let title = '';
+    let description = '';
+    let imgPath = '';
+
+    this.actRoute.params.subscribe((params: Params) => {
+      if(params['index']){
+        console.log(params['index']);
+        this.index = params['index'];
+
+        const editPost = this.postService.getSpecPost(this.index);
+
+        title = editPost.title;
+        description = editPost.description;
+        imgPath = editPost.imgPath;
+
+        this.editMode = true
+      }
+    }
+    );
+
     this.form = new FormGroup({
-      title : new FormControl(null, [Validators.required]),
-      imgPath: new FormControl(null, [Validators.required]),
-      description: new FormControl(null, [Validators.required])
-    })
+      title: new FormControl(title, [Validators.required]),
+      imgPath: new FormControl(imgPath, [Validators.required]),
+      description: new FormControl(description, [Validators.required]),
+    });
   }
 
-  onSubmit() {
+  async onSubmit() {
     const title = this.form.value.title;
     const imgPath = this.form.value.imgPath;
     const description = this.form.value.description;
+    const numberoflikes = this.form.value.numberoflikes;
+    const userId = await this.authService.getUserId();
 
-    const post: Post = new Post(title, imgPath, description, 'christian', new Date()
+    let comments: string[] = [];
+    if (this.editMode) {
+      comments = this.postService.getSpecPost(this.index).comments;
+    }
+
+    const post: Post = new Post(
+      this.postService.getSpecPost(this.index).id,
+      title,
+      imgPath,
+      description,
+      'Christian L. Montesor',
+      new Date(),
+      0,
+      comments,
+      userId
     );
 
-  this.postService.addPost(post)
+    if(this.editMode == true){
+      this.postService.updatePost(this.index, post)
+    }
+    else{
+      this.postService.addPost(post);
+    }
 
-  this.router.navigate(['post-list'])
-  } 
-
+    this.router.navigate(['post-list']);
+}
 }

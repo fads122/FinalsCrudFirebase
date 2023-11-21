@@ -1,58 +1,28 @@
-<form class="needs-validation" (ngSubmit)="onSubmit()" [formGroup]="form">
-    <div class="form-row" style="display: flex;">
-      <!-- First Column -->
-      <div class="col-md-6">
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input type="text" class="form-control" id="validationTooltip01" placeholder="title" required formControlName="title" >
-        </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <div class="input-group">
-            <div class="input-group-prepend">
-            </div>
-            <input type="text" class="form-control" id="description" placeholder="description"
-              aria-describedby="description" required formControlName="description">
-            <div class="invalid-tooltip">
-              Please choose a unique and valid username.
-            </div>
-          </div>
-        </div>
-        <!-- <div class="form-group">
-          <label for="validationTooltip03">Date</label>
-          <input type="text" class="form-control" id="validationTooltip03" placeholder="Description" required formControlName="description">
-          <div class="invalid-tooltip">
-            Please provide a valid description.
-          </div>
-        </div> -->
-      </div>
-      
-      <!-- Second Column -->
-      <div class="col-md-6" style="margin-left:50px;">
-        <div class="form-group">
-          <label for="validationTooltip02">Image Path</label>
-          <input type="text" class="form-control" id="validationTooltip02" placeholder="Image Path" required formControlName="imgPath">
-          <img src="{{form.value.imgPath}}">
-        </div>
-        <!-- <div class="form-group">
-          <label for="validationTooltip04">Author</label>
-          <input type="text" class="form-control" id="validationTooltip04" placeholder="Author" required>
-        </div> -->
-        <!-- <div class="form-group">
-          <label for="validationTooltip05">Zip</label>
-          <input type="text" class="form-control" id="validationTooltip05" placeholder="Zip" required>
-          <div class="invalid-tooltip">
-            Please provide a valid zip.
-          </div>
-        </div> -->
-      </div>
-    </div><br>
-    
+<div class="post-container">
+  <h3 class="font-weight-bold" *ngIf="editMode == false">Create Post</h3>
+  <h3 class="font-weight-bold" *ngIf="editMode == true">Edit Post</h3>
+
+  <form class="needs-validation" (ngSubmit)="onSubmit()" [formGroup]="form">
+    <!-- Title and Description -->
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" class="form-control" id="title" placeholder="Title" required formControlName="title">
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <input type="text" class="form-control" id="description" placeholder="Description" required formControlName="description">
+    </div>
+
+    <!-- Image Path -->
+    <div class="form-group">
+      <label for="imgPath">Image Path</label>
+      <input type="text" class="form-control" id="imgPath" placeholder="Image Path" required formControlName="imgPath">
+      <img src="{{form.value.imgPath}}" class="preview-image">
+    </div>
+
     <!-- Submit Button -->
-    <div class="form-row">
-      <div class="col-md-12 button-container">
-        <button class="btn btn-primary" type="submit" [disabled]="form.invalid">Submit Form</button>
-      </div>
+    <div class="button-container">
+      <button class="btn btn-primary" type="submit" [disabled]="form.invalid">Submit Form</button>
     </div>
   </form>
-  
+</div>

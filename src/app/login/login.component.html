@@ -1,0 +1,11 @@
+<div class="facebook-login-container">
+  <div class="facebook-login-box">
+    <h2>Login</h2>
+    <input [(ngModel)]="email" placeholder="Email" class="facebook-input">
+    <input [(ngModel)]="password" placeholder="Password" type="password" class="facebook-input">
+    <button (click)="login()" class="facebook-button">Login</button>
+    <div class="facebook-register-link">
+      Don't have an account? <a routerLink="/register">Register</a>
+    </div>
+  </div>
+</div>

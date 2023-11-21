@@ -1,9 +1,21 @@
-<h3>{{post?.title}}</h3>
-<img class="img-responsive" src={{post?.imgPath}}>
-<p>
-    {{post?.description}}
-</p>
-<p>{{post?.author}}</p>
-<p>{{post?.dateCreated}}</p>
+<div class="post-container">
+  <h3>{{post?.title}}</h3>
+  <img class="img-responsive" src={{post?.imgPath}} style="width: 300px; height: 300px;">
+  <p>{{post?.description}}</p>
+  <p>Author: {{post?.author}}</p>
+  <p>Date: {{post?.dateCreated}}</p>
 
-<button class="btn btn-primary" >Edit</button> | <button class="btn btn-danger" (click)="delete()">Delete</button>
+  <!-- ... -->
+  <div class="comment-section">
+    <input type="text" [(ngModel)]="comment" placeholder="Add a comment">
+    <button (click)="submitComment()">Add Comment</button>
+  </div><br>
+
+  <div *ngFor="let comment of post?.comments; let i = index">
+    <p>{{ comment }} <button (click)="deleteComment(i)" class="delete-btn">Delete</button></p>
+  </div>
+
+
+
+  <button class="btn btn-primary" (click)="onEdit()">Edit</button> | <button class="btn btn-danger" (click)="delete()">Delete</button> | <button (click)="onClick()" class="btn btn-success" style="font-size:16px;">Likes: {{post?.numberoflikes}}</button>
+</div>

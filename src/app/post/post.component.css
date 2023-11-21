@@ -1,0 +1,134 @@
+.post-container {
+  background-color: #fff;
+  border: 1px solid #dddfe2;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+h3 {
+  color: #1877f2;
+}
+
+img.img-responsive {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+p {
+  color: #1c1e21;
+}
+
+.comment-section {
+  margin-top: 15px;
+}
+
+.comment-section input[type="text"] {
+  padding: 8px;
+  border: 1px solid #dddfe2;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+
+.comment-section button {
+  padding: 8px 15px;
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comment-section button:hover {
+  background-color: #1466c1;
+}
+
+.btn {
+  padding: 8px 15px;
+  margin-top: 10px;
+  margin-right: 5px;
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #1466c1;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #bd2130;
+}
+
+.btn-success {
+  background-color: #28a745;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+.comment-section {
+  margin-top: 15px;
+}
+
+.comment-section input[type="text"] {
+  padding: 8px;
+  border: 1px solid #dddfe2;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+
+.comment-section button {
+  padding: 8px 15px;
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comment-section button:hover {
+  background-color: #1466c1;
+}
+
+.comment-section p {
+  margin-bottom: 8px;
+}
+
+.comment-section button.delete-btn {
+  padding: 5px 10px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comment-section button.delete-btn:hover {
+  background-color: #bd2130;
+}
+.delete-btn {
+  padding: 5px 10px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 5px; /* Adjust the margin as needed */
+}
+
+.delete-btn:hover {
+  background-color: #bd2130;
+}
+
+
