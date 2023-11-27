@@ -23,25 +23,30 @@ export class PostEditComponent implements OnInit {
     let imgPath = '';
 
     this.actRoute.params.subscribe((params: Params) => {
-      if(params['index']){
-        console.log(params['index']);
-        this.index = params['index'];
+      let title = '';
+      let description = '';
+      let imgPath = '';
 
-        const editPost = this.postService.getSpecPost(this.index);
+      if(params['id']){
+        console.log(params['id']);
+        const id = params['id'];
 
-        title = editPost.title;
-        description = editPost.description;
-        imgPath = editPost.imgPath;
+        const editPost = this.postService.getPostById(id);
 
-        this.editMode = true
+        if (editPost) {
+          title = editPost.title;
+          description = editPost.description;
+          imgPath = editPost.imgPath;
+
+          this.editMode = true;
+        }
       }
-    }
-    );
 
-    this.form = new FormGroup({
-      title: new FormControl(title, [Validators.required]),
-      imgPath: new FormControl(imgPath, [Validators.required]),
-      description: new FormControl(description, [Validators.required]),
+      this.form = new FormGroup({
+        title: new FormControl(title, [Validators.required]),
+        imgPath: new FormControl(imgPath, [Validators.required]),
+        description: new FormControl(description, [Validators.required]),
+      });
     });
   }
 
@@ -49,33 +54,24 @@ export class PostEditComponent implements OnInit {
     const title = this.form.value.title;
     const imgPath = this.form.value.imgPath;
     const description = this.form.value.description;
-    const numberoflikes = this.form.value.numberoflikes;
     const userId = await this.authService.getUserId();
 
-    let comments: { userId: string, comment: string }[] = [];
-if (this.editMode) {
-  comments = this.postService.getSpecPost(this.index).comments;
-}
+    let existingPost = this.postService.getSpecPost(this.index);
+    let postId = existingPost ? existingPost.id : '';
 
-    let post: Post;
-    const existingPost = this.postService.getSpecPost(this.index);
-    if (existingPost) {
-      post = new Post(
-        existingPost.id,
-        title,
-        imgPath,
-        description,
-        'Christian L. Montesor',
-        new Date(),
-        0,
-        comments,
-        userId
-      );
-    } else {
-      // Handle the case where the post does not exist
-      console.error(`Post at index ${this.index} does not exist.`);
-      return;
-    }
+    let comments: { userId: string, comment: string }[] = [];
+
+    const post: Post = new Post(
+      postId,
+      title,
+      imgPath,
+      description,
+      'Christian L. Montesor',
+      new Date(),
+      0,
+      comments,
+      userId
+    );
 
     if(this.editMode == true){
       this.postService.updatePost(this.index, post)
@@ -85,5 +81,4 @@ if (this.editMode) {
     }
 
     this.router.navigate(['post-list']);
-  }
-}
+  }}
