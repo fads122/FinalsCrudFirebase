@@ -52,22 +52,30 @@ export class PostEditComponent implements OnInit {
     const numberoflikes = this.form.value.numberoflikes;
     const userId = await this.authService.getUserId();
 
-    let comments: string[] = [];
-    if (this.editMode) {
-      comments = this.postService.getSpecPost(this.index).comments;
-    }
+    let comments: { userId: string, comment: string }[] = [];
+if (this.editMode) {
+  comments = this.postService.getSpecPost(this.index).comments;
+}
 
-    const post: Post = new Post(
-      this.postService.getSpecPost(this.index).id,
-      title,
-      imgPath,
-      description,
-      'Christian L. Montesor',
-      new Date(),
-      0,
-      comments,
-      userId
-    );
+    let post: Post;
+    const existingPost = this.postService.getSpecPost(this.index);
+    if (existingPost) {
+      post = new Post(
+        existingPost.id,
+        title,
+        imgPath,
+        description,
+        'Christian L. Montesor',
+        new Date(),
+        0,
+        comments,
+        userId
+      );
+    } else {
+      // Handle the case where the post does not exist
+      console.error(`Post at index ${this.index} does not exist.`);
+      return;
+    }
 
     if(this.editMode == true){
       this.postService.updatePost(this.index, post)
@@ -77,5 +85,5 @@ export class PostEditComponent implements OnInit {
     }
 
     this.router.navigate(['post-list']);
-}
+  }
 }

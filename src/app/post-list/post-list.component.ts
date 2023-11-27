@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Post } from '../post.model';
 import { PostService } from '../post-service';
-import { BackEndService } from '../back-end.service';
+import { AuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -10,20 +10,24 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./post-list.component.css']
 })
 export class PostListComponent implements OnInit {
-  index=0
-  listofPosts: Post[] = [];
+  posts: Post[] = [];
+  private authSub!: Subscription;
 
-  constructor(
-    private postService: PostService, private backEndService: BackEndService
-  ){}
-
+  constructor(private postService: PostService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.postService.getPost().then((posts: Post[]) => {
-        this.listofPosts = posts;
-        this.postService.listChangeEvent.subscribe((post:Post[]) => {
-            this.listofPosts = post;
-        })
+    this.authSub = this.authService.getAuthState().subscribe(user => {
+      if (user) {
+        this.fetchPosts();
+      }
     });
-}
+  }
+
+  ngOnDestroy(): void {
+    this.authSub.unsubscribe();
+  }
+
+  async fetchPosts() {
+    this.posts = await this.postService.getPost();
+  }
 }

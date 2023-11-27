@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Post } from '../post.model';
 import { PostService } from '../post-service';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-post',
@@ -14,7 +15,7 @@ export class PostComponent implements OnInit {
   @Input() index: number = 0;
   @Input() post?: Post;
 
-  constructor(private postService: PostService, private router: Router) { }
+  constructor(private postService: PostService, private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
     console.log(this.post);
@@ -32,14 +33,22 @@ export class PostComponent implements OnInit {
     this.postService.likepost(this.index);
   }
 
-  deleteComment(commentIndex: number) {
-    this.postService.deleteComment(this.index, commentIndex);
-}
+  async deleteComment(commentIndex: number) {
+    const userId = await this.authService.getUserId();
+    if (this.post && this.post.userId === userId) {
+      this.postService.deleteComment(this.index, commentIndex);
+    } else {
+      console.error('Only the author of the post can delete a comment.');
+    }
+  }
 
-  submitComment() {
-    if (this.comment) {
-      this.postService.addcomment(this.index, this.comment); // Pass the post object and the new comment
-      this.comment = ''; // Clear the comment input field after adding the comment
+  async submitComment() {
+    const userId = await this.authService.getUserId();
+    if (this.post && this.post.userId === userId) {
+      this.postService.addcomment(this.index, this.comment);
+      this.comment = '';
+    } else {
+      console.error('Only the author of the post can add a comment.');
     }
   }
 }

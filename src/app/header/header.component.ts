@@ -16,7 +16,7 @@ export class HeaderComponent implements OnInit {
   constructor (private backEndService: BackEndService, private postService: PostService, private authService: AuthService, private router: Router){}
 
   ngOnInit(): void {
-    
+
   }
 
   onSave(){
