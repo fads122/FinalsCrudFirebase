@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { PostService } from './post-service';
 import { Post } from './post.model';
 import { tap } from 'rxjs/operators'; // Import the tap operator
+import { from } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +17,14 @@ export class BackEndService {
 
   fetchData() {
     this.postService.fetchData().pipe(
-      tap((listOfPost: Post[]) => {
-        listOfPost.forEach(post => this.ensurePostHasCommentsArrayAndDateObject(post));
-        this.postService.setPosts(listOfPost);
+      tap((data: any) => {
+        const listOfPosts: Post[] = [];
+        for (const userId in data) {
+          if (data[userId].posts) {
+            listOfPosts.push(...Object.values(data[userId].posts) as Post[]);
+          }
+        }
+        this.postService.setPosts(listOfPosts);
       })
     ).subscribe();
   }
@@ -26,6 +33,5 @@ export class BackEndService {
     if (!Array.isArray(post.comments)) {
       post.comments = [];
     }
-    post.dateCreated = new Date(post.dateCreated);
   }
 }

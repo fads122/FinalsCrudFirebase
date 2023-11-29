@@ -21,6 +21,9 @@ export class PostListComponent implements OnInit {
         this.fetchPosts();
       }
     });
+    this.postService.getPostUpdateListener().subscribe((posts: Post[]) => {
+      this.posts = posts;
+    });
   }
 
   ngOnDestroy(): void {

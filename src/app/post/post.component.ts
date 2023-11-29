@@ -23,15 +23,17 @@ export class PostComponent implements OnInit {
   }
 
   delete() {
-    this.postService.deleteButton(this.index);
+    this.postService.deleteButton(this.index.toString());
   }
 
   onEdit() {
-    this.router.navigate(['/post-edit', this.post?.id]);
+    this.router.navigate(['/post-edit', this.index]);
   }
 
   onClick() {
-    this.postService.likepost(this.index);
+    if (this.post && this.post.userId) {
+      this.postService.likepost(this.post.userId, this.index);
+    }
   }
 
   deleteComment(commentIndex: number) {
@@ -39,10 +41,11 @@ export class PostComponent implements OnInit {
 }
 
 async submitComment() {
-  if (this.comment) {
+  if (this.post && this.post.userId && this.comment) {
     const userId = await this.authService.getUserId();
-    this.postService.addcomment(this.index, this.comment, userId); // Pass the post object and the new comment
-    this.comment = ''; // Clear the comment input field after adding the comment
+    this.postService.addcomment(this.post.userId, this.comment, userId, this.index);
+    this.comment = '';
   }
 }
+
 }

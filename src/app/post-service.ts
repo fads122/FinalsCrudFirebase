@@ -26,42 +26,53 @@ export class PostService{
   }
 
   // Method to delete a post
-  deleteButton(index: number): void {
-      this.modifyPosts(() => this.listofPosts.splice(index, 1));
+  deleteButton(userId: string): void {
+    const index = this.listofPosts.findIndex(post => post.userId === userId);
+    this.modifyPosts(() => this.listofPosts.splice(index, 1));
+    this.postsUpdated.next([...this.listofPosts]);
   }
 
-  // Method to add a post
-  async addPost(post: Post): Promise<void> {
-    post.userId = await this.authService.getUserId();
-    this.modifyPosts(() => this.listofPosts.push(post));
+ // Method to add a post
+async addPost(post: Post): Promise<void> {
+  post.userId = await this.authService.getUserId();
+  this.modifyPosts(() => this.listofPosts.push(post));
 }
 
   // Method to update a post
-  updatePost(index: number, post: Post): void {
-      this.modifyPosts(() => this.listofPosts[index] = post);
+  updatePost(userId: string, newPost: Post): void {
+    const index = this.listofPosts.findIndex(post => post.userId === userId);
+    if (index !== -1) {
+      this.modifyPosts(() => this.listofPosts[index] = newPost);
+    }
   }
-
-
 
     getSpecPost(index: number){
         return this.listofPosts[index];
     }
 
-      likepost(index: number){
-          this.listofPosts[index].numberoflikes++;
-          this.listChangeEvent.emit(this.listofPosts);
-          this.saveData();
+    likepost(userId: string, index: number){
+      const userPosts = this.listofPosts.filter(post => post.userId === userId);
+      const post = userPosts[index];
+      if (post) {
+        post.numberoflikes++;
+        this.listChangeEvent.emit(this.listofPosts);
+        this.saveData();
+      } else {
+        console.error(`Cannot like post: No post found with ID ${userId}`);
       }
+    }
 
-      addcomment(index: number, comment: string, userId: string){
-        if (this.listofPosts[index] && this.listofPosts[index].comments) {
-          this.listofPosts[index].comments.push({ userId, comment });
-          this.listChangeEvent.emit(this.listofPosts);
-          this.saveData();
-        } else {
-          console.error(`Cannot add comment: Post at index ${index} or its comments property is undefined`);
-        }
+    addcomment(userId: string, comment: string, commentUserId: string, index: number){
+      const userPosts = this.listofPosts.filter(post => post.userId === userId);
+      const post = userPosts[index];
+      if (post && post.comments) {
+        post.comments.push({ userId: commentUserId, comment });
+        this.listChangeEvent.emit(this.listofPosts);
+        this.saveData();
+      } else {
+        console.error(`Cannot add comment: No post found with ID ${userId} or its comments property is undefined`);
       }
+    }
 
     setPosts(listofposts: Post[]) {
         this.listofPosts = listofposts;
@@ -69,8 +80,9 @@ export class PostService{
         this.saveData();
     }
 
-    getPostById(id: string): Post | undefined {
-      return this.listofPosts.find(post => post.id === id);
+    getPostById(userId: string, index: number): Post | undefined {
+      const userPosts = this.listofPosts.filter(post => post.userId === userId);
+      return userPosts[index];
     }
 
     searchPosts(searchTerm: string): Post[] {
@@ -87,14 +99,23 @@ export class PostService{
       }
   }
 
-    saveData(): void {
-      this.http.put<Post[]>('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json', this.listofPosts)
-          .pipe(retry(3))
-          .subscribe({
-              next: () => console.log('Data saved successfully'),
-              error: err => console.error('Error in saveData', err)
-          });
+  saveData(): void {
+    const postsData = this.listofPosts.reduce((acc, post) => {
+      if (!acc[post.userId]) {
+        acc[post.userId] = { posts: {} };
+      }
+      acc[post.userId].posts[this.listofPosts.indexOf(post)] = post;
+      return acc;
+    }, {} as { [userId: string]: { posts: { [index: number]: Post } } });
+
+    this.http.put('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json', postsData)
+      .pipe(retry(3))
+      .subscribe({
+        next: () => console.log('Data saved successfully'),
+        error: err => console.error('Error in saveData', err)
+      });
   }
+
 
   fetchData(): Observable<Post[]> {
     return this.http.get<Post[]>('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json')
