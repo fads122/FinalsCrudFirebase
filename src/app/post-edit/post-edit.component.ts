@@ -67,7 +67,7 @@ export class PostEditComponent implements OnInit {
     'Christian L. Montesor',
     new Date(),
     0,
-    comments,
+    [],
     userId
   );
 

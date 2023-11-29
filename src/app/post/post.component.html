@@ -13,7 +13,7 @@
   </div><br>
 
   <div *ngFor="let comment of post?.comments; let i = index">
-    <p>{{ comment }} <button (click)="deleteComment(i)" class="delete-btn">Delete</button></p>
+    <p>{{ comment.comment }} <button (click)="deleteComment(i)" class="delete-btn">Delete</button></p>
   </div>
 
 

@@ -18,8 +18,14 @@ export class PostService{
 
     async getPost(): Promise<Post[]> {
       const userId = await this.authService.getUserId();
-      return this.listofPosts.filter(post => post.userId === userId);
-  }
+      const posts = this.listofPosts.filter(post => post.userId === userId);
+      posts.forEach(post => {
+        if (!Array.isArray(post.comments)) {
+          post.comments = [];
+        }
+      });
+      return posts;
+    }
 
     getPostUpdateListener(): Observable<Post[]> {
       return this.postsUpdated.asObservable();
@@ -62,15 +68,14 @@ async addPost(post: Post): Promise<void> {
       }
     }
 
-    addcomment(userId: string, comment: string, commentUserId: string, index: number){
-      const userPosts = this.listofPosts.filter(post => post.userId === userId);
-      const post = userPosts[index];
-      if (post && post.comments) {
+    addcomment(comment: string, commentUserId: string, index: number){
+      const post = this.listofPosts[index];
+      if (post && Array.isArray(post.comments)) {
         post.comments.push({ userId: commentUserId, comment });
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {
-        console.error(`Cannot add comment: No post found with ID ${userId} or its comments property is undefined`);
+        console.error(`Cannot add comment: Post at index ${index} or its comments property is undefined`);
       }
     }
 
@@ -91,13 +96,16 @@ async addPost(post: Post): Promise<void> {
 
     deleteComment(postIndex: number, commentIndex: number) {
       if (this.listofPosts[postIndex] && this.listofPosts[postIndex].comments) {
-          this.listofPosts[postIndex].comments.splice(commentIndex, 1);
-          this.listChangeEvent.emit(this.listofPosts);
-          this.saveData();
+        this.listofPosts[postIndex].comments.splice(commentIndex, 1);
+        if (this.listofPosts[postIndex].comments.length === 0) {
+          this.listofPosts[postIndex].comments = [];
+        }
+        this.listChangeEvent.emit(this.listofPosts);
+        this.saveData();
       } else {
-          console.error(`Cannot delete comment: Post at index ${postIndex} or its comments property is undefined`);
+        console.error(`Cannot delete comment: Post at index ${postIndex} or its comments property is undefined`);
       }
-  }
+    }
 
   saveData(): void {
     const postsData = this.listofPosts.reduce((acc, post) => {

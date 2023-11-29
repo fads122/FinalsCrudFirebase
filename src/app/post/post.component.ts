@@ -43,7 +43,7 @@ export class PostComponent implements OnInit {
 async submitComment() {
   if (this.post && this.post.userId && this.comment) {
     const userId = await this.authService.getUserId();
-    this.postService.addcomment(this.post.userId, this.comment, userId, this.index);
+    this.postService.addcomment(this.comment, userId, this.index);
     this.comment = '';
   }
 }
