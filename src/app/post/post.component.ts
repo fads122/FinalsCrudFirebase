@@ -23,7 +23,9 @@ export class PostComponent implements OnInit {
   }
 
   delete() {
-    this.postService.deleteButton(this.index.toString());
+    if (this.post && this.post.userId) {
+      this.postService.deleteButton(this.post.userId);
+    }
   }
 
   onEdit() {

@@ -33,6 +33,9 @@ export class PostListComponent implements OnInit {
       this.searchTerm = searchTerm;
       this.onSearch();
     });
+    this.postService.getPostDeletedListener().subscribe(() => {
+      this.fetchPosts();
+    });
   }
 
   ngOnDestroy(): void {

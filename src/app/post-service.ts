@@ -13,6 +13,7 @@ export class PostService{
     private postsUpdated = new Subject<Post[]>();
     private postsCache: Post[] = [];
     private searchTerm = new BehaviorSubject<string>('');
+    private postDeleted = new Subject<void>();
 
     constructor(private http: HttpClient, private authService: AuthService) { }
 
@@ -47,7 +48,11 @@ export class PostService{
   deleteButton(userId: string): void {
     const index = this.listofPosts.findIndex(post => post.userId === userId);
     this.modifyPosts(() => this.listofPosts.splice(index, 1));
-    this.getPost(); // Refresh the list of posts for the current user
+    this.postDeleted.next();
+  }
+
+  getPostDeletedListener(): Observable<void> {
+    return this.postDeleted.asObservable();
   }
 
  // Method to add a post

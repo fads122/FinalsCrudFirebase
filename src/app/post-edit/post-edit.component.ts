@@ -30,7 +30,7 @@ export class PostEditComponent implements OnInit {
         // Fetch the posts from the database
         const listofPosts = await this.postService.getPost();
 
-        const editPost = listofPosts.find(post => post.userId === this.index);
+        const editPost = listofPosts[+this.index]; // Convert string to number using the unary plus operator
 
         if (editPost) {
           this.form.controls['title'].setValue(editPost.title);
