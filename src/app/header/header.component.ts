@@ -10,13 +10,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  private _searchTerm: string = '';
   @Output() searchTermChange = new EventEmitter<string>();
+  private _searchTerm: string = '';
 
-  constructor (private backEndService: BackEndService, private postService: PostService, private authService: AuthService, private router: Router){}
+  constructor(private postService: PostService, private backEndService: BackEndService, private authService: AuthService, private router: Router){}
 
   ngOnInit(): void {
-
   }
 
   onSave(){
@@ -38,5 +37,12 @@ export class HeaderComponent implements OnInit {
 
   get searchTerm(): string {
     return this._searchTerm;
+  }
+
+  onSearch(): void {
+    this.postService.setSearchTerm(this.searchTerm);
+  }
+  onSearchClick(): void {
+    this.postService.setSearchTerm(this.searchTerm);
   }
 }

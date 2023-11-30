@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Subject, Observable } from "rxjs";
 import { retry } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class PostService{
@@ -11,6 +12,7 @@ export class PostService{
     listofPosts: Post[] = []
     private postsUpdated = new Subject<Post[]>();
     private postsCache: Post[] = [];
+    private searchTerm = new BehaviorSubject<string>('');
 
     constructor(private http: HttpClient, private authService: AuthService) { }
 
@@ -30,6 +32,16 @@ export class PostService{
     getPostUpdateListener(): Observable<Post[]> {
       return this.postsUpdated.asObservable();
   }
+
+  setSearchTerm(term: string) {
+    console.log('Search term updated:', term); // Add this line
+    this.searchTerm.next(term);
+  }
+
+  getSearchTerm() {
+    return this.searchTerm.asObservable();
+  }
+
 
   // Method to delete a post
   deleteButton(userId: string): void {

@@ -14,7 +14,9 @@
         </li>
       </ul>
       <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" [(ngModel)]="searchTerm">
+        <!-- In your header.component.html -->
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search posts by title">
+        <button class="btn btn-primary" type="button" (click)="onSearchClick()">Search</button>
         <button class="btn btn-primary" type="submit" (click)="onSave()">Save</button>
         <button class="btn btn-primary" type="submit" (click)="onFetch()">Fetch</button>
         <button (click)="onLogout()">Logout</button>
