@@ -29,8 +29,6 @@ export class BackEndService {
     ).subscribe();
   }
 
-  
-
   private ensurePostHasCommentsArrayAndDateObject(post: Post) {
     if (!Array.isArray(post.comments)) {
       post.comments = [];

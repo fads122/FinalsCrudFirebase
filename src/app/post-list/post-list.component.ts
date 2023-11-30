@@ -3,7 +3,6 @@ import { Post } from '../post.model';
 import { PostService } from '../post-service';
 import { AuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
-import { BackEndService } from '../back-end.service';
 
 @Component({
   selector: 'app-post-list',
@@ -16,7 +15,7 @@ export class PostListComponent implements OnInit {
   searchTerm: string = '';
   authSub: Subscription;
 
-  constructor(private postService: PostService, private authService: AuthService, private backEndService: BackEndService) {
+  constructor(private postService: PostService, private authService: AuthService) {
     this.authSub = new Subscription();
   }
 
@@ -41,7 +40,6 @@ export class PostListComponent implements OnInit {
   }
 
   async fetchPosts() {
-    await this.backEndService.fetchData();
     this.posts = await this.postService.getPost();
     this.filteredPosts = [...this.posts];
   }
