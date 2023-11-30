@@ -47,7 +47,7 @@ export class PostService{
   deleteButton(userId: string): void {
     const index = this.listofPosts.findIndex(post => post.userId === userId);
     this.modifyPosts(() => this.listofPosts.splice(index, 1));
-    this.postsUpdated.next([...this.listofPosts]);
+    this.getPost(); // Refresh the list of posts for the current user
   }
 
  // Method to add a post
