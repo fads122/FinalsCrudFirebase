@@ -119,14 +119,16 @@ async addPost(post: Post): Promise<void> {
       }
     }
 
-  saveData(): void {
-    const postsData = this.listofPosts.reduce((acc, post) => {
-      if (!acc[post.userId]) {
-        acc[post.userId] = { posts: {} };
-      }
-      acc[post.userId].posts[this.listofPosts.indexOf(post)] = post;
-      return acc;
-    }, {} as { [userId: string]: { posts: { [index: number]: Post } } });
+    saveData(): void {
+      const postsData = this.listofPosts.reduce((acc, post) => {
+        if (post && !acc[post.userId]) {
+          acc[post.userId] = { posts: {} };
+        }
+        if (post) {
+          acc[post.userId].posts[this.listofPosts.indexOf(post)] = post;
+        }
+        return acc;
+      }, {} as { [userId: string]: { posts: { [index: number]: Post } } });
 
     this.http.put('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json', postsData)
       .pipe(retry(3))
@@ -140,7 +142,7 @@ async addPost(post: Post): Promise<void> {
   fetchData(): Observable<Post[]> {
     return this.http.get<Post[]>('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json')
         .pipe(retry(3));
-}
+  }
 
 private modifyPosts(modification: () => void): void {
   modification();
