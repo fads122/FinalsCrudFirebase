@@ -59,7 +59,7 @@ async onSubmit() {
   const userId = await this.authService.getUserId();
   const userEmail = await this.authService.getUserEmail();
 
-  let comments: { userId: string, comment: string }[] = [];
+  let likes: string[] = []; // Add this line
 
   const post: Post = new Post(
     title,
@@ -69,7 +69,8 @@ async onSubmit() {
     userEmail,
     new Date(),
     0,
-    [],
+    likes, // Add this line
+    [], // Initialize comments as an empty array
     userId
   );
 

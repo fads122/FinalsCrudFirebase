@@ -40,8 +40,26 @@ export class PostComponent implements OnInit {
 
   async onClick() {
     const userId = await this.authService.getUserId();
-    if (this.post?.userId === userId) {
-      this.postService.likepost(userId, this.index);
+    if (this.post?.userId !== userId) {
+      const likes = this.post?.likes || [];
+      if (likes.includes(userId)) {
+        // User has already liked this post, so unlike it
+        const index = likes.indexOf(userId);
+        likes.splice(index, 1);
+        if (this.post) {
+          this.post.numberoflikes--;
+        }
+      } else {
+        // User has not liked this post yet, so like it
+        likes.push(userId);
+        if (this.post) {
+          this.post.numberoflikes++;
+        }
+      }
+      if (this.post) {
+        this.post.likes = likes; // Update the likes array of the post
+        this.postService.updatePost(this.post.userId, this.post);
+      }
     }
   }
 

@@ -85,10 +85,12 @@ async addPost(post: Post): Promise<void> {
       }
     }
 
-    addcomment(comment: string, commentUserId: string, index: number) {
+    async addcomment(comment: string, commentUserId: string, index: number) {
       const post = this.listofPosts[index];
+      const email = await this.authService.getUserEmail();
+      const timestamp = new Date();
       if (post && Array.isArray(post.comments)) {
-        post.comments.push({ userId: commentUserId, comment });
+        post.comments.unshift({ userId: commentUserId, email, comment, timestamp }); // Use unshift instead of push
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {

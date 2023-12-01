@@ -7,11 +7,8 @@ export class Post {
     public authorEmail: string,
     public date: Date,
     public numberoflikes: number,
-    public comments: { userId: string, comment: string }[],
-    public userId: string,
-
+    public likes: string[] = [], // Add this line
+    public comments: { userId: string, email: string, comment: string, timestamp: Date }[],
+    public userId: string
   ) {}
-  }
-
-
-
+}
