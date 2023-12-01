@@ -19,6 +19,8 @@ import { HomeComponent } from './home/home.component';
 import { ServiceComponent } from './service/service.component';
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from 'src/environment/environment';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+
 // import { FirebaseService } from './services/firebase.service';
 
 
@@ -31,7 +33,9 @@ const routes : Routes = [
   { path: 'authentication', component: AuthComponent},
   { path: 'post-edit/:index', component: PostEditComponent},
   { path: 'login', component: LoginComponent},
-  { path: 'register', component: RegisterComponent}
+  { path: 'register', component: RegisterComponent},
+  { path: 'user-profile', component: UserProfileComponent },
+
 ]
 
 @NgModule({
@@ -45,7 +49,8 @@ const routes : Routes = [
     HomeComponent,
     ServiceComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    UserProfileComponent,
   ],
   imports: [
     BrowserModule,

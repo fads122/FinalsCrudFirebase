@@ -22,6 +22,10 @@ export class HeaderComponent implements OnInit {
     this.backEndService.saveData();
   }
 
+  goToProfile() {
+    this.router.navigate(['/user-profile']);
+  }
+
   onLogout() {
     this.authService.logout();
   }

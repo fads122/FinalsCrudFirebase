@@ -52,11 +52,12 @@ export class PostEditComponent implements OnInit {
 
 }
 
-  async onSubmit() {
+async onSubmit() {
   const title = this.form.value.title;
   const imgPath = this.form.value.imgPath;
   const description = this.form.value.description;
   const userId = await this.authService.getUserId();
+  const userEmail = await this.authService.getUserEmail();
 
   let comments: { userId: string, comment: string }[] = [];
 
@@ -65,6 +66,7 @@ export class PostEditComponent implements OnInit {
     imgPath,
     description,
     'Christian L. Montesor',
+    userEmail,
     new Date(),
     0,
     [],
@@ -72,7 +74,7 @@ export class PostEditComponent implements OnInit {
   );
 
   if(this.editMode == true){
-    this.postService.updatePost(userId, post)
+    this.postService.updatePost(userId, post);
   }
   else{
     this.postService.addPost(post);
@@ -80,5 +82,4 @@ export class PostEditComponent implements OnInit {
 
   this.router.navigate(['post-list']);
 }
-
 }

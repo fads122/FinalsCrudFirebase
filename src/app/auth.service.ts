@@ -27,6 +27,13 @@ export class AuthService {
     return user?.uid || '';
   }
 
+  
+
+  async getUserEmail(): Promise<string> {
+    const user = await this.afAuth.currentUser;
+    return user?.email || '';
+  }
+
 
    async register(email: string, password: string) {
     return await this.afAuth.createUserWithEmailAndPassword(email, password);

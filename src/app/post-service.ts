@@ -21,7 +21,7 @@ export class PostService{
 
     async getPost(): Promise<Post[]> {
       const userId = await this.authService.getUserId();
-      const posts = this.listofPosts.filter(post => post.userId === userId);
+      const posts = this.listofPosts.filter(post => post && post.userId !== userId); // Add this line
       posts.forEach(post => {
         if (!Array.isArray(post.comments)) {
           post.comments = [];
@@ -85,7 +85,7 @@ async addPost(post: Post): Promise<void> {
       }
     }
 
-    addcomment(comment: string, commentUserId: string, index: number){
+    addcomment(comment: string, commentUserId: string, index: number) {
       const post = this.listofPosts[index];
       if (post && Array.isArray(post.comments)) {
         post.comments.push({ userId: commentUserId, comment });
@@ -102,44 +102,47 @@ async addPost(post: Post): Promise<void> {
         this.saveData();
     }
 
-    getPostById(userId: string, index: number): Post | undefined {
-      const userPosts = this.listofPosts.filter(post => post.userId === userId);
-      return userPosts[index];
+    getPostsByUserId(userId: string): Post[] {
+      return this.listofPosts.filter(post => post.userId === userId);
     }
 
     searchPosts(searchTerm: string): Post[] {
       return this.listofPosts.filter(post => post.title.toLowerCase().includes(searchTerm.toLowerCase()));
     }
 
-    deleteComment(postIndex: number, commentIndex: number) {
-      if (this.listofPosts[postIndex] && this.listofPosts[postIndex].comments) {
-        this.listofPosts[postIndex].comments.splice(commentIndex, 1);
-        if (this.listofPosts[postIndex].comments.length === 0) {
-          this.listofPosts[postIndex].comments = [];
+    async deleteComment(postIndex: number, commentIndex: number) {
+      const userId = await this.authService.getUserId();
+      const post = this.listofPosts[postIndex];
+      if (post && Array.isArray(post.comments) && post.comments[commentIndex].userId === userId) {
+        post.comments.splice(commentIndex, 1);
+        if (post.comments.length === 0) {
+          post.comments = [];
         }
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {
-        console.error(`Cannot delete comment: Post at index ${postIndex} or its comments property is undefined`);
+        console.error(`Cannot delete comment: Comment at index ${commentIndex} does not belong to current user or its post at index ${postIndex} is undefined`);
       }
     }
 
-  saveData(): void {
-    const postsData = this.listofPosts.reduce((acc, post) => {
-      if (!acc[post.userId]) {
-        acc[post.userId] = { posts: {} };
-      }
-      acc[post.userId].posts[this.listofPosts.indexOf(post)] = post;
-      return acc;
-    }, {} as { [userId: string]: { posts: { [index: number]: Post } } });
+    saveData(): void {
+      const postsData = this.listofPosts.reduce((acc, post) => {
+        if (post && post.userId) { // Add this line
+          if (!acc[post.userId]) {
+            acc[post.userId] = { posts: {} };
+          }
+          acc[post.userId].posts[this.listofPosts.indexOf(post)] = post;
+        }
+        return acc;
+      }, {} as { [userId: string]: { posts: { [index: number]: Post } } });
 
-    this.http.put('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json', postsData)
-      .pipe(retry(3))
-      .subscribe({
-        next: () => console.log('Data saved successfully'),
-        error: err => console.error('Error in saveData', err)
-      });
-  }
+      this.http.put('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json', postsData)
+        .pipe(retry(3))
+        .subscribe({
+          next: () => console.log('Data saved successfully'),
+          error: err => console.error('Error in saveData', err)
+        });
+    }
 
 
   fetchData(): Observable<Post[]> {

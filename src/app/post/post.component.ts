@@ -15,32 +15,42 @@ export class PostComponent implements OnInit {
   comment: string = '';
   @Input() index: number = 0;
   @Input() post?: Post;
+  currentUserId: string = '';
 
   constructor(private postService: PostService, private router: Router, private authService: AuthService) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.currentUserId = await this.authService.getUserId();
     console.log(this.post);
   }
 
-  delete() {
-    if (this.post && this.post.userId) {
-      this.postService.deleteButton(this.post.userId);
+  async delete() {
+    const userId = await this.authService.getUserId();
+    if (this.post?.userId === userId) {
+      this.postService.deleteButton(userId);
     }
   }
 
-  onEdit() {
-    this.router.navigate(['/post-edit', this.index]);
-  }
-
-  onClick() {
-    if (this.post && this.post.userId) {
-      this.postService.likepost(this.post.userId, this.index);
+  async onEdit() {
+    const userId = await this.authService.getUserId();
+    if (this.post?.userId === userId) {
+      this.router.navigate(['/post-edit', this.index]);
     }
   }
 
-  deleteComment(commentIndex: number) {
-    this.postService.deleteComment(this.index, commentIndex);
-}
+  async onClick() {
+    const userId = await this.authService.getUserId();
+    if (this.post?.userId === userId) {
+      this.postService.likepost(userId, this.index);
+    }
+  }
+
+  async deleteComment(commentIndex: number) {
+    const userId = await this.authService.getUserId();
+    if (this.post?.comments[commentIndex].userId === userId) {
+      this.postService.deleteComment(this.index, commentIndex);
+    }
+  }
 
 async submitComment() {
   if (this.post && this.post.userId && this.comment) {
