@@ -85,16 +85,20 @@ async addPost(post: Post): Promise<void> {
       }
     }
 
-    async addcomment(comment: string, commentUserId: string, index: number) {
-      const post = this.listofPosts[index];
+    async addcomment(comment: string, commentUserId: string, postId: string) {
+      const post = this.listofPosts.find(p => p.id === postId);
+      if (!post) {
+        console.error(`Cannot add comment: No post found with id ${postId}`);
+        return;
+      }
       const email = await this.authService.getUserEmail();
       const timestamp = new Date();
-      if (post && Array.isArray(post.comments)) {
-        post.comments.unshift({ userId: commentUserId, email, comment, timestamp }); // Use unshift instead of push
+      if (Array.isArray(post.comments)) {
+        post.comments.unshift({ userId: commentUserId, email, comment, timestamp });
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {
-        console.error(`Cannot add comment: Post at index ${index} or its comments property is undefined`);
+        console.error(`Cannot add comment: Comments property of post with id ${postId} is not an array`);
       }
     }
 

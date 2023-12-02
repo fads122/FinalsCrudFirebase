@@ -27,7 +27,7 @@ export class AuthService {
     return user?.uid || '';
   }
 
-  
+
 
   async getUserEmail(): Promise<string> {
     const user = await this.afAuth.currentUser;

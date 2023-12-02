@@ -1,5 +1,6 @@
 export class Post {
   constructor(
+    public id: string, // Add this line
     public title: string,
     public imgPath: string,
     public description: string,

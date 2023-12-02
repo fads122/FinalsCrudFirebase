@@ -70,12 +70,12 @@ export class PostComponent implements OnInit {
     }
   }
 
-async submitComment() {
-  if (this.post && this.post.userId && this.comment) {
-    const userId = await this.authService.getUserId();
-    this.postService.addcomment(this.comment, userId, this.index);
-    this.comment = '';
+  async submitComment() {
+    if (this.post && this.post.id && this.comment) {
+      const userId = await this.authService.getUserId();
+      this.postService.addcomment(this.comment, userId, this.post.id);
+      this.comment = '';
+    }
   }
-}
 
 }

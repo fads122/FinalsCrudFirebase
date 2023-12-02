@@ -62,6 +62,7 @@ async onSubmit() {
   let likes: string[] = []; // Add this line
 
   const post: Post = new Post(
+    Date.now().toString(), // Use the current timestamp as a unique id
     title,
     imgPath,
     description,
