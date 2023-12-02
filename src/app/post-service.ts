@@ -5,6 +5,7 @@ import { Subject, Observable } from "rxjs";
 import { retry } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { BehaviorSubject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
 export class PostService{
@@ -56,16 +57,20 @@ export class PostService{
   }
 
  // Method to add a post
-async addPost(post: Post): Promise<void> {
+ async addPost(post: Post): Promise<void> {
   post.userId = await this.authService.getUserId();
-  this.modifyPosts(() => this.listofPosts.push(post));
+  this.listofPosts.push(post);
+  this.postsUpdated.next([...this.listofPosts]);
+  this.saveData();
 }
 
   // Method to update a post
   updatePost(userId: string, newPost: Post): void {
-    const index = this.listofPosts.findIndex(post => post.userId === userId);
+    const index = this.listofPosts.findIndex(post => post.userId === userId && post.id === newPost.id);
     if (index !== -1) {
-      this.modifyPosts(() => this.listofPosts[index] = newPost);
+      this.listofPosts[index] = newPost;
+      this.postsUpdated.next([...this.listofPosts]);
+      this.saveData();
     }
   }
 
@@ -74,8 +79,15 @@ async addPost(post: Post): Promise<void> {
     }
 
     likepost(userId: string, index: number){
+      console.log('userId:', userId); // Log the userId
+      console.log('index:', index); // Log the index
+
       const userPosts = this.listofPosts.filter(post => post.userId === userId);
+      console.log('userPosts:', userPosts); // Log the userPosts array
+
       const post = userPosts[index];
+      console.log('post:', post); // Log the post
+
       if (post) {
         post.numberoflikes++;
         this.listChangeEvent.emit(this.listofPosts);
@@ -83,22 +95,26 @@ async addPost(post: Post): Promise<void> {
       } else {
         console.error(`Cannot like post: No post found with ID ${userId}`);
       }
+
+      console.log('listofPosts:', this.listofPosts); // Log the listofPosts array
     }
 
     async addcomment(comment: string, commentUserId: string, postId: string) {
-      const post = this.listofPosts.find(p => p.id === postId);
-      if (!post) {
-        console.error(`Cannot add comment: No post found with id ${postId}`);
-        return;
-      }
+      console.log('postId:', postId); // Log the postId
+      console.log('listofPosts:', this.listofPosts); // Log the listofPosts array
+
+      const validPosts = this.listofPosts.filter(post => post !== null);
+      console.log('validPosts:', validPosts); // Log the validPosts array
+
+      const post = validPosts.find(p => p.id === postId);
       const email = await this.authService.getUserEmail();
       const timestamp = new Date();
-      if (Array.isArray(post.comments)) {
+      if (post && Array.isArray(post.comments)) {
         post.comments.unshift({ userId: commentUserId, email, comment, timestamp });
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {
-        console.error(`Cannot add comment: Comments property of post with id ${postId} is not an array`);
+        console.error(`Cannot add comment: Post with id ${postId} or its comments property is undefined`);
       }
     }
 
@@ -117,13 +133,18 @@ async addPost(post: Post): Promise<void> {
     }
 
     async deleteComment(postIndex: number, commentIndex: number) {
-      const userId = await this.authService.getUserId();
-      const post = this.listofPosts[postIndex];
-      if (post && Array.isArray(post.comments) && post.comments[commentIndex].userId === userId) {
+      console.log('postIndex:', postIndex); // Log the postIndex
+      console.log('commentIndex:', commentIndex); // Log the commentIndex
+
+      const currentUserId = await this.authService.getUserId();
+      console.log('currentUserId:', currentUserId); // Log the currentUserId
+
+      const validPosts = this.listofPosts.filter(post => post !== null);
+      const post = validPosts[postIndex];
+      console.log('post:', post); // Log the post
+
+      if (post && Array.isArray(post.comments) && post.comments[commentIndex].userId === currentUserId) {
         post.comments.splice(commentIndex, 1);
-        if (post.comments.length === 0) {
-          post.comments = [];
-        }
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {
@@ -151,10 +172,25 @@ async addPost(post: Post): Promise<void> {
     }
 
 
-  fetchData(): Observable<Post[]> {
-    return this.http.get<Post[]>('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json')
-        .pipe(retry(3));
-}
+    fetchData() {
+      return this.http.get<{ [key: string]: Post }>('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json')
+        .pipe(
+          map((postData: { [key: string]: Post }) => {
+            const postsArray: Post[] = [];
+            for (const key in postData) {
+              if (postData.hasOwnProperty(key)) {
+                postsArray.push({ ...postData[key], id: key });
+              }
+            }
+            return postsArray;
+          }),
+          tap((postsArray: Post[]) => {
+            // Sort the posts by their id
+            postsArray.sort((a: Post, b: Post) => a.id.localeCompare(b.id));
+            this.setPosts(postsArray);
+          })
+        );
+    }
 
 private modifyPosts(modification: () => void): void {
   modification();
