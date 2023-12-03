@@ -76,18 +76,18 @@ export class PostService{
     }
 
     likepost(userId: string, postId: string){
+      console.log('Before liking/unliking post:', this.listofPosts); // Add this line
       const post = this.listofPosts.find(post => post && post.id === postId);
       if (post) {
         if (!post.likes.includes(userId)) {
-          // User has not liked this post yet, so like it
           post.likes.push(userId);
           post.numberoflikes++;
         } else {
-          // User has already liked this post, so unlike it
           const index = post.likes.indexOf(userId);
           post.likes.splice(index, 1);
           post.numberoflikes--;
         }
+        console.log('After liking/unliking post:', this.listofPosts); // Add this line
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {

@@ -10,7 +10,6 @@ export class AuthService {
     this.afAuth.authState.subscribe(user => {
       if (user) {
         localStorage.setItem('user', JSON.stringify(user));
-        this.router.navigate(['/post-list']);
       } else {
         localStorage.removeItem('user');
         this.router.navigate(['/login']);
@@ -27,7 +26,7 @@ export class AuthService {
     return user?.uid || '';
   }
 
-  
+
 
   async getUserEmail(): Promise<string> {
     const user = await this.afAuth.currentUser;
