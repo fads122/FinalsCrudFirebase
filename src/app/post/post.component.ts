@@ -66,14 +66,14 @@ export class PostComponent implements OnInit {
   async deleteComment(commentIndex: number) {
     const userId = await this.authService.getUserId();
     if (this.post?.comments[commentIndex].userId === userId) {
-      this.postService.deleteComment(this.index, commentIndex);
+      this.postService.deleteComment(this.post.id, commentIndex);
     }
   }
 
 async submitComment() {
   if (this.post && this.post.userId && this.comment) {
     const userId = await this.authService.getUserId();
-    this.postService.addcomment(this.comment, userId, this.index);
+    this.postService.addcomment(this.comment, userId, this.post.id);
     this.comment = '';
   }
 }

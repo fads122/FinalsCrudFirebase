@@ -5,6 +5,7 @@ import { Subject, Observable } from "rxjs";
 import { retry } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { BehaviorSubject } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({providedIn: 'root'})
 export class PostService{
@@ -56,14 +57,15 @@ export class PostService{
   }
 
  // Method to add a post
-async addPost(post: Post): Promise<void> {
+ async addPost(post: Post): Promise<void> {
+  post.id = uuidv4(); // Add this line
   post.userId = await this.authService.getUserId();
   this.modifyPosts(() => this.listofPosts.push(post));
 }
 
   // Method to update a post
   updatePost(userId: string, newPost: Post): void {
-    const index = this.listofPosts.findIndex(post => post.userId === userId);
+    const index = this.listofPosts.findIndex(post => post && post.userId === userId);
     if (index !== -1) {
       this.modifyPosts(() => this.listofPosts[index] = newPost);
     }
@@ -73,28 +75,41 @@ async addPost(post: Post): Promise<void> {
         return this.listofPosts[index];
     }
 
-    likepost(userId: string, index: number){
-      const userPosts = this.listofPosts.filter(post => post.userId === userId);
-      const post = userPosts[index];
+    likepost(userId: string, postId: string){
+      const post = this.listofPosts.find(post => post && post.id === postId);
       if (post) {
-        post.numberoflikes++;
+        if (!post.likes.includes(userId)) {
+          // User has not liked this post yet, so like it
+          post.likes.push(userId);
+          post.numberoflikes++;
+        } else {
+          // User has already liked this post, so unlike it
+          const index = post.likes.indexOf(userId);
+          post.likes.splice(index, 1);
+          post.numberoflikes--;
+        }
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {
-        console.error(`Cannot like post: No post found with ID ${userId}`);
+        console.error(`Cannot like post: No post found with ID ${postId}`);
       }
     }
 
-    async addcomment(comment: string, commentUserId: string, index: number) {
-      const post = this.listofPosts[index];
+    async addcomment(comment: string, commentUserId: string, postId: string) {
+      console.log('Adding comment to post with ID:', postId);
+      console.log('Current posts:', this.listofPosts.filter(post => post).map(post => post.id));
+      const post = this.listofPosts.find(post => post && post.id === postId);
       const email = await this.authService.getUserEmail();
       const timestamp = new Date();
-      if (post && Array.isArray(post.comments)) {
-        post.comments.unshift({ userId: commentUserId, email, comment, timestamp }); // Use unshift instead of push
+      if (post) {
+        if (!Array.isArray(post.comments)) {
+          post.comments = [];
+        }
+        post.comments.unshift({ userId: commentUserId, email, comment, timestamp });
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {
-        console.error(`Cannot add comment: Post at index ${index} or its comments property is undefined`);
+        console.error(`Cannot add comment: Post with ID ${postId} is undefined`);
       }
     }
 
@@ -112,18 +127,21 @@ async addPost(post: Post): Promise<void> {
       return this.listofPosts.filter(post => post.title.toLowerCase().includes(searchTerm.toLowerCase()));
     }
 
-    async deleteComment(postIndex: number, commentIndex: number) {
-      const userId = await this.authService.getUserId();
-      const post = this.listofPosts[postIndex];
-      if (post && Array.isArray(post.comments) && post.comments[commentIndex].userId === userId) {
-        post.comments.splice(commentIndex, 1);
-        if (post.comments.length === 0) {
-          post.comments = [];
+    async deleteComment(postId: string, commentIndex: number) {
+      const post = this.listofPosts.find(post => post && post.id === postId);
+      if (post && Array.isArray(post.comments)) {
+        if (commentIndex !== -1 && commentIndex < post.comments.length) {
+          post.comments.splice(commentIndex, 1);
+          if (post.comments.length === 0) {
+            post.comments = [];
+          }
+          this.listChangeEvent.emit(this.listofPosts);
+          this.saveData();
+        } else {
+          console.error(`Cannot delete comment: No comment found at index ${commentIndex}`);
         }
-        this.listChangeEvent.emit(this.listofPosts);
-        this.saveData();
       } else {
-        console.error(`Cannot delete comment: Comment at index ${commentIndex} does not belong to current user or its post at index ${postIndex} is undefined`);
+        console.error(`Cannot delete comment: Post with ID ${postId} is undefined`);
       }
     }
 

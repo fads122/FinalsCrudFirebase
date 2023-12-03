@@ -4,6 +4,7 @@ import { PostService } from '../post-service';
 import { Post } from '../post.model';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-post-edit',
@@ -62,6 +63,7 @@ async onSubmit() {
   let likes: string[] = []; // Add this line
 
   const post: Post = new Post(
+    uuidv4(),
     title,
     imgPath,
     description,
