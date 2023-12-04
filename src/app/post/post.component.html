@@ -108,6 +108,19 @@
   font-size: 0.8em;
   font-style: italic;
 }
+/* post.component.css */
+
+/* post.component.css */
+
+.btn-liked {
+  background-color: red;
+  color: white;
+}
+
+.btn-not-liked {
+  background-color: black;
+  color: white;
+}
 </style>
 
 <div class="post-container">
@@ -145,7 +158,7 @@
   </section>
 
   <section>
-    <button (click)="onClick()" class="btn btn-success" style="font-size: 16px;">Likes: {{post?.numberoflikes}}</button>
+<button [class.btn-liked]="isLiked" [class.btn-not-liked]="!isLiked" (click)="onClick()" class="btn" style="font-size: 16px;">Likes: {{post?.numberoflikes}}</button>
   </section>
 
 </div>

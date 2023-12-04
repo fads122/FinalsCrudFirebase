@@ -100,29 +100,36 @@ export class PostService{
       }
     }
 
-    async addcomment(comment: string, commentUserId: string, postId: string) {
-      console.log('Adding comment to post with ID:', postId);
-      console.log('Current posts:', this.listofPosts.filter(post => post).map(post => post.id));
-      const post = this.listofPosts.find(post => post && post.id === postId);
-      const email = await this.authService.getUserEmail();
-      const timestamp = new Date();
-      if (post) {
-        if (!Array.isArray(post.comments)) {
-          post.comments = [];
-        }
-        post.comments.unshift({ userId: commentUserId, email, comment, timestamp });
-        // Add a notification
-        if (!Array.isArray(post.notifications)) {
-          post.notifications = [];
-        }
-        post.notifications.unshift({ type: 'comment', userId: commentUserId, recipientId: post.userId, timestamp }); // Set recipientId here
-        console.log('Notifications after adding:', post.notifications); // Add this line
-        this.listChangeEvent.emit(this.listofPosts);
-        this.saveData();
-      } else {
-        console.error(`Cannot add comment: Post with ID ${postId} is undefined`);
-      }
+    // post.service.ts
+
+async addcomment(comment: string, commentUserId: string, postId: string) {
+  console.log('Adding comment to post with ID:', postId);
+  console.log('Current posts:', this.listofPosts.filter(post => post).map(post => post.id));
+  const post = this.listofPosts.find(post => post && post.id === postId);
+  const email = await this.authService.getUserEmail();
+  const timestamp = new Date();
+
+  if (post) {
+    if (!Array.isArray(post.comments)) {
+      post.comments = [];
     }
+    post.comments.unshift({ userId: commentUserId, email, comment, timestamp });
+
+    // Add a notification
+    if (!Array.isArray(post.notifications)) {
+      post.notifications = [];
+    }
+    post.notifications.unshift({ type: 'comment', userId: commentUserId, recipientId: post.userId, timestamp });
+
+    console.log('Notifications after adding:', post.notifications);
+
+    this.listChangeEvent.emit(this.listofPosts);
+    this.saveData();
+  } else {
+    console.error(`Cannot add comment: Post with ID ${postId} is undefined`);
+  }
+}
+
 
     setPosts(listofposts: Post[]) {
         this.listofPosts = listofposts;

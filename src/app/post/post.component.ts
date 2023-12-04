@@ -16,13 +16,15 @@ export class PostComponent implements OnInit {
   @Input() index: number = 0;
   @Input() post?: Post;
   currentUserId: string = '';
+  isLiked = false;
 
   constructor(private postService: PostService, private router: Router, private authService: AuthService) { }
 
-  async ngOnInit(): Promise<void> {
-    this.currentUserId = await this.authService.getUserId();
-    console.log(this.post);
-  }
+async ngOnInit(): Promise<void> {
+  this.currentUserId = await this.authService.getUserId();
+  console.log(this.post);
+  this.isLiked = this.post?.likedByUsers.includes(this.currentUserId) || false;
+}
 
   async delete() {
     const userId = await this.authService.getUserId();
@@ -31,6 +33,8 @@ export class PostComponent implements OnInit {
     }
   }
 
+
+
   async onEdit() {
     const userId = await this.authService.getUserId();
     if (this.post?.userId === userId) {
@@ -38,12 +42,15 @@ export class PostComponent implements OnInit {
     }
   }
 
-  async onClick() {
-    const userId = await this.authService.getUserId();
-    if (this.post?.id) {
-      this.postService.likepost(userId, this.post.id);
-    }
+  // post.component.ts
+
+async onClick() {
+  const userId = await this.authService.getUserId();
+  if (this.post?.id) {
+    this.postService.likepost(userId, this.post.id);
+    this.isLiked = !this.isLiked;
   }
+}
 
   async deleteComment(commentIndex: number) {
     const userId = await this.authService.getUserId();

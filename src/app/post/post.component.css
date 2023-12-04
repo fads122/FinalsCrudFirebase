@@ -1,0 +1,11 @@
+/* post.component.css */
+
+.btn-liked {
+  background-color: red;
+  color: white;
+}
+
+.btn-not-liked {
+  background-color: white;
+  color: black;
+}
