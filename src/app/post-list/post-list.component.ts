@@ -22,7 +22,11 @@ export class PostListComponent implements OnInit {
   ngOnInit(): void {
     this.authSub = this.authService.getAuthState().subscribe(user => {
       if (user) {
-        this.fetchPosts();
+        this.postService.getPost().then(posts => {
+          this.posts = posts;
+          this.filteredPosts = [...posts];
+          console.log('Posts:', this.posts); // Add this line
+        });
       }
     });
     this.postService.getPostUpdateListener().subscribe((posts: Post[]) => {
@@ -34,17 +38,12 @@ export class PostListComponent implements OnInit {
       this.onSearch();
     });
     this.postService.getPostDeletedListener().subscribe(() => {
-      this.fetchPosts();
+      this.postService.getPost().then(posts => {
+        this.posts = posts;
+        this.filteredPosts = [...posts];
+        console.log('Posts after deletion:', this.posts); // Add this line
+      });
     });
-  }
-
-  ngOnDestroy(): void {
-    this.authSub.unsubscribe();
-  }
-
-  async fetchPosts() {
-    this.posts = await this.postService.getPost();
-    this.filteredPosts = [...this.posts];
   }
 
   async onSearch(): Promise<void> {
@@ -52,8 +51,10 @@ export class PostListComponent implements OnInit {
     this.filteredPosts = this.posts.filter(post => {
       const matchesTitle = post.title.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchesDescription = post.description.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchesEmail = post.authorEmail.toLowerCase().includes(this.searchTerm.toLowerCase());
       const isUserPost = post.userId === userId;
-      return (matchesTitle || matchesDescription) && isUserPost;
+      return (matchesTitle || matchesDescription || matchesEmail) && isUserPost;
     });
+    console.log('Filtered posts:', this.filteredPosts); // Add this line
   }
 }

@@ -1,0 +1,86 @@
+/* Add this CSS in your style file or inline style */
+.post-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  margin: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.post-container h2 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.post-container p {
+  margin-bottom: 10px;
+}
+
+.post-container img {
+  max-width: 50%; /* Adjusted to make the image responsive within its container */
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.post-container button {
+  margin-right: 10px;
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.post-container button:hover {
+  background-color: #f0f0f0;
+}
+
+.like-button {
+  background-color: #0084ff;
+  color: #fff;
+  border: none;
+}
+
+.like-button:hover {
+  background-color: #0062cc;
+}
+
+.comment-container {
+  margin-top: 15px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.comment-container p {
+  margin-bottom: 5px;
+}
+
+.comment-container button {
+  margin-left: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.comment-container button:hover {
+  background-color: #f0f0f0;
+}
+
+.button-section {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+/* Optional: Style the delete post button differently */
+.delete-post-button {
+  background-color: #ff5555;
+  color: #fff;
+}
+
+.delete-post-button:hover {
+  background-color: #cc0000;
+}

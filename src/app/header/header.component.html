@@ -14,11 +14,14 @@
         </li>
       </ul>
       <form class="d-flex">
+        <!-- header.component.html -->
+
+<app-notification-list></app-notification-list>
         <!-- In your header.component.html -->
         <input type="text" [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search posts by title">
         <button class="btn btn-primary" type="button" (click)="onSearchClick()">Search</button>
-        <button class="btn btn-primary" type="submit" (click)="onSave()">Save</button>
-        <button class="btn btn-primary" type="submit" (click)="onFetch()">Fetch</button>
+        <!-- <button class="btn btn-primary" type="submit" (click)="onSave()">Save</button>
+        <button class="btn btn-primary" type="submit" (click)="onFetch()">Fetch</button> -->
         <button class="btn btn-primary" type="button" (click)="goToProfile()">Go to Profile</button>
         <button (click)="onLogout()">Logout</button>
       </form>

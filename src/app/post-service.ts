@@ -22,11 +22,15 @@ export class PostService{
 
     async getPost(): Promise<Post[]> {
       const userId = await this.authService.getUserId();
-      const posts = this.listofPosts.filter(post => post && post.userId !== userId); // Add this line
+      const posts = this.listofPosts.filter(post => post && post.userId !== userId);
       posts.forEach(post => {
         if (!Array.isArray(post.comments)) {
           post.comments = [];
         }
+        if (!Array.isArray(post.notifications)) { // Add this line
+          post.notifications = []; // Add this line
+        }
+        console.log('Notifications in post:', post.notifications);
       });
       return posts;
     }
@@ -35,8 +39,10 @@ export class PostService{
       return this.postsUpdated.asObservable();
   }
 
+
+
   setSearchTerm(term: string) {
-    console.log('Search term updated:', term); // Add this line
+    console.log('Search term updated:', term);
     this.searchTerm.next(term);
   }
 
@@ -76,18 +82,17 @@ export class PostService{
     }
 
     likepost(userId: string, postId: string){
-      console.log('Before liking/unliking post:', this.listofPosts); // Add this line
       const post = this.listofPosts.find(post => post && post.id === postId);
       if (post) {
-        if (!post.likes.includes(userId)) {
-          post.likes.push(userId);
-          post.numberoflikes++;
-        } else {
-          const index = post.likes.indexOf(userId);
-          post.likes.splice(index, 1);
+        post.likedByUsers = post.likedByUsers || [];
+        if (post.likedByUsers.includes(userId)) {
+          const index = post.likedByUsers.indexOf(userId);
+          post.likedByUsers.splice(index, 1);
           post.numberoflikes--;
+        } else {
+          post.likedByUsers.push(userId);
+          post.numberoflikes++;
         }
-        console.log('After liking/unliking post:', this.listofPosts); // Add this line
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {
@@ -106,6 +111,12 @@ export class PostService{
           post.comments = [];
         }
         post.comments.unshift({ userId: commentUserId, email, comment, timestamp });
+        // Add a notification
+        if (!Array.isArray(post.notifications)) {
+          post.notifications = [];
+        }
+        post.notifications.unshift({ type: 'comment', userId: commentUserId, recipientId: post.userId, timestamp }); // Set recipientId here
+        console.log('Notifications after adding:', post.notifications); // Add this line
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
       } else {
@@ -120,7 +131,11 @@ export class PostService{
     }
 
     getPostsByUserId(userId: string): Post[] {
-      return this.listofPosts.filter(post => post.userId === userId);
+      return this.listofPosts.filter(post => post && post.userId === userId);
+    }
+
+    getPostById(postId: string): Post | undefined {
+      return this.listofPosts.find(post => post && post.id === postId);
     }
 
     searchPosts(searchTerm: string): Post[] {
@@ -159,7 +174,10 @@ export class PostService{
       this.http.put('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json', postsData)
         .pipe(retry(3))
         .subscribe({
-          next: () => console.log('Data saved successfully'),
+          next: () => {
+            console.log('Data saved successfully');
+            console.log('Saved posts:', this.listofPosts); // Add this line
+          },
           error: err => console.error('Error in saveData', err)
         });
     }

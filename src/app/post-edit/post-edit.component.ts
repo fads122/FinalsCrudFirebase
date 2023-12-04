@@ -15,6 +15,9 @@ export class PostEditComponent implements OnInit {
   form!: FormGroup;
   index: string = '';
   editMode = false;
+  postId: string = '';
+  post: Post = new Post('', '', '', '', '', '', new Date(), 0, [], [], '');
+  // ...
 
   constructor(private postService: PostService, private router: Router, private actRoute: ActivatedRoute, private authService: AuthService) {}
 
@@ -25,31 +28,37 @@ export class PostEditComponent implements OnInit {
     let imgPath = '';
 
 
-    this.actRoute.params.subscribe(async (params: Params) => {
-      this.index = params['index'];
-      if(this.index){
-        // Fetch the posts from the database
-        const listofPosts = await this.postService.getPost();
-
-        const editPost = listofPosts[+this.index]; // Convert string to number using the unary plus operator
-
-        if (editPost) {
-          this.form.controls['title'].setValue(editPost.title);
-          this.form.controls['description'].setValue(editPost.description);
-          this.form.controls['imgPath'].setValue(editPost.imgPath);
-
-          this.editMode = true;
-        }
-      } else {
-        this.editMode = false;
-      }
-    });
-
       this.form = new FormGroup({
         title: new FormControl('', [Validators.required]),
         imgPath: new FormControl('', [Validators.required]),
         description: new FormControl('', [Validators.required]),
       });
+
+    this.actRoute.params.subscribe(async (params: Params) => {
+      this.postId = params['id'];
+      this.index = params['index'];
+
+      let post: Post | undefined;
+      if (this.postId) {
+        post = this.postService.getPostById(this.postId);
+      } else if (this.index) {
+        const listofPosts = await this.postService.getPost();
+        post = listofPosts[+this.index];
+      }
+
+      if (post) {
+        this.post = post;
+        this.form.controls['title'].setValue(post.title);
+        this.form.controls['description'].setValue(post.description);
+        this.form.controls['imgPath'].setValue(post.imgPath);
+        this.editMode = true;
+      } else {
+        this.editMode = false;
+      }
+    });
+
+
+    
 
 }
 

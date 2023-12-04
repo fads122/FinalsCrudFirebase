@@ -20,6 +20,9 @@ import { ServiceComponent } from './service/service.component';
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from 'src/environment/environment';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { NotificationComponent } from './notification/notification.component';
+import { NotificationListComponent } from './notification-list/notification-list.component';
+import { NotificationService } from './notification.service';
 
 // import { FirebaseService } from './services/firebase.service';
 
@@ -31,7 +34,7 @@ const routes : Routes = [
   { path: 'post-list', component: PostListComponent},
   { path: 'post-add', component: PostEditComponent},
   { path: 'authentication', component: AuthComponent},
-  { path: 'post-edit/:index', component: PostEditComponent},
+  { path: 'post-edit/:id', component: PostEditComponent },
   { path: 'login', component: LoginComponent},
   { path: 'register', component: RegisterComponent},
   { path: 'user-profile', component: UserProfileComponent },
@@ -51,12 +54,15 @@ const routes : Routes = [
     LoginComponent,
     RegisterComponent,
     UserProfileComponent,
+    NotificationComponent,
+    NotificationListComponent,
   ],
   imports: [
     BrowserModule,
     MatButtonModule,
     RouterModule.forRoot(routes),
     FormsModule,
+
     ReactiveFormsModule,
     HttpClientModule,
     AngularFireAuthModule,
@@ -70,7 +76,7 @@ const routes : Routes = [
       appId: "1:452447375053:web:c422df9a1a296c4c85a384"
     }),
   ],
-  providers: [],
+  providers: [NotificationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
