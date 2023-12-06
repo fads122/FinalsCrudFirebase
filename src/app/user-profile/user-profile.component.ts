@@ -3,6 +3,8 @@ import { PostService } from '../post-service';
 import { AuthService } from '../auth.service';
 import { Post } from '../post.model';
 import { Router } from '@angular/router';
+import { UserService } from '../user.service'; // adjust the path according to your project structure
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-user-profile',
@@ -12,13 +14,15 @@ import { Router } from '@angular/router';
 export class UserProfileComponent implements OnInit {
   posts: Post[] = [];
   comment: string = '';
+  users: any[] = [];
 
-  constructor(private postService: PostService, private authService: AuthService, private router: Router) { }
+  constructor(private postService: PostService, private authService: AuthService, private router: Router, private userService: UserService) { }
 
   async ngOnInit() {
-    await this.postService.fetchData().toPromise(); // Fetch the posts from the backend
+    const posts = await firstValueFrom(this.postService.fetchData());
     const userId = await this.authService.getUserId();
     this.posts = this.postService.getPostsByUserId(userId);
+    this.users = await this.userService.getUsers();
   }
 
 

@@ -1,4 +1,11 @@
 <!-- Add this HTML in your component's template file -->
+<div class="user-list">
+  <h2>Friend Suggestions</h2>
+  <div *ngFor="let user of users" class="user-item">
+    <p>{{ user.email }}</p>
+    <button>Add Friend</button>
+  </div>
+</div>
 <div *ngFor="let post of posts" class="post-container">
   <h2>{{ post.title }}</h2>
   <p>{{ post.description }}</p>
