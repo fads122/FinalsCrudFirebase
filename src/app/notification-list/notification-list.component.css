@@ -1,0 +1,15 @@
+.notification-button {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #fff;
+  background-color: transparent;
+  border: none;
+  position: relative;
+}
+
+.notification-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  /* Add other styles as needed to style your dropdown */
+}

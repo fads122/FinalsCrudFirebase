@@ -10,7 +10,7 @@ import { getAuth } from "firebase/auth";
 export class AuthService {
   private auth;
 
-  
+
 
   constructor(private afAuth: AngularFireAuth, private router: Router) {
     const app = initializeApp({

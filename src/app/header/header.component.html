@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg" style="background-color: #1877f2; color: #fff;">
+<nav class="navbar navbar-expand-lg" *ngIf="showNavbar()" style="background-color: #1877f2; color: #fff;">
   <div class="container-fluid">
     <a class="navbar-brand" href="#" style="color: #fff;" routerLink="post-list">CRUD</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -13,17 +13,26 @@
           <a class="nav-link" routerLink="/post-add" style="color: #fff;">Create Post</a>
         </li>
       </ul>
-      <form class="d-flex">
-        <!-- header.component.html -->
-
-<app-notification-list></app-notification-list>
-        <!-- In your header.component.html -->
+      <div class="search-container">
         <input type="text" [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search posts by title">
-        <button class="btn btn-primary" type="button" (click)="onSearchClick()">Search</button>
-        <!-- <button class="btn btn-primary" type="submit" (click)="onSave()">Save</button>
-        <button class="btn btn-primary" type="submit" (click)="onFetch()">Fetch</button> -->
-        <button class="btn btn-primary" type="button" (click)="goToProfile()">Go to Profile</button>
-        <button (click)="onLogout()">Logout</button>
+        <button class="btn btn-primary search-button" type="button" (click)="onSearchClick()">
+          <span role="img" aria-label="search">🔍</span>
+        </button>
+      </div>
+      <form class="d-flex">
+        <app-notification-list></app-notification-list>
+        <div class="dropdown" style="margin-right: 75px;">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            Menu
+          </button>
+          <span class="navbar-text">
+            Logged in as: {{ userEmail }}
+          </span>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><button class="dropdown-item" (click)="goToProfile()">Go to Profile</button></li>
+            <li><button class="dropdown-item" (click)="onLogout()">Logout</button></li>
+          </ul>
+        </div>
       </form>
     </div>
   </div>

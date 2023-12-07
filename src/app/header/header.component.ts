@@ -12,8 +12,13 @@ import { Router } from '@angular/router';
 export class HeaderComponent implements OnInit {
   @Output() searchTermChange = new EventEmitter<string>();
   private _searchTerm: string = '';
+  userEmail: string = '';
 
-  constructor(private postService: PostService, private backEndService: BackEndService, private authService: AuthService, private router: Router){}
+  constructor(private postService: PostService, private backEndService: BackEndService, private authService: AuthService, private router: Router){
+    this.authService.getAuthState().subscribe(user => {
+      this.userEmail = user?.email || ''; // Add this line
+    });
+  }
 
   ngOnInit(): void {
   }
@@ -22,7 +27,10 @@ export class HeaderComponent implements OnInit {
     this.backEndService.saveData();
   }
 
-  
+  showNavbar(): boolean {
+    const route = this.router.url;
+    return route !== '/login' && route !== '/register';
+  }
 
   goToProfile() {
     this.router.navigate(['/user-profile']);

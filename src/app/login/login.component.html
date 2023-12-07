@@ -4,7 +4,7 @@
       <h2>Login</h2>
       <input [(ngModel)]="email" name="email" placeholder="Email" class="facebook-input">
       <input [(ngModel)]="password" name="password" placeholder="Password" class="facebook-input" type="password">
-      <button (click)="login()" class="facebook-button">Login</button>
+      <button (click)="login(email, password)" class="facebook-button">Login</button>
       <div class="facebook-register-link">
         Don't have an account? <a routerLink="/register">Register</a>
       </div>

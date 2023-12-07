@@ -13,10 +13,12 @@ export class LoginComponent {
 
   constructor(private authService: AuthService) { }
 
-  login() {
-    this.authService.login(this.email, this.password).catch(error => {
-      console.error(error);
-      // handle error here, e.g. show a message to the user
-    });
-}
+  async login(email: string, password: string) {
+    try {
+      await this.authService.login(email, password);
+    } catch (error) {
+      console.error('Error logging in:', error);
+      // Handle the error further if needed, e.g. show a message to the user
+    }
+  }
 }

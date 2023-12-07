@@ -1,8 +1,6 @@
-<!-- notification-list.component.html -->
-
 <div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Notifications
+  <button class="btn btn-light dropdown-toggle notification-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span role="img" aria-label="bell">🔔</span>
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a class="dropdown-item" *ngFor="let notification of notifications">

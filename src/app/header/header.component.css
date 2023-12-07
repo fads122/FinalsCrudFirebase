@@ -4,3 +4,15 @@ table.table img {
   height: 100px; /* Set the desired height */
   /* You can adjust the width and height values as per your requirements */
 }
+.search-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
