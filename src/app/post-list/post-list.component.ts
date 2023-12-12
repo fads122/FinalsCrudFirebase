@@ -3,6 +3,7 @@ import { Post } from '../post.model';
 import { PostService } from '../post-service';
 import { AuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-post-list',
@@ -14,6 +15,8 @@ export class PostListComponent implements OnInit {
   filteredPosts: Post[] = [];
   searchTerm: string = '';
   authSub: Subscription;
+
+
 
   constructor(private postService: PostService, private authService: AuthService) {
     this.authSub = new Subscription();
@@ -48,13 +51,20 @@ export class PostListComponent implements OnInit {
 
   async onSearch(): Promise<void> {
     const userId = await this.authService.getUserId();
-    this.filteredPosts = this.posts.filter(post => {
-      const matchesTitle = post.title.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchesDescription = post.description.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchesEmail = post.authorEmail.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const isUserPost = post.userId === userId;
-      return (matchesTitle || matchesDescription || matchesEmail) && isUserPost;
-    });
+    this.filteredPosts = this.postService.searchPosts(this.searchTerm, userId);
     console.log('Filtered posts:', this.filteredPosts); // Add this line
   }
-}
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.filteredPosts, event.previousIndex, event.currentIndex);
+    this.filteredPosts.forEach((post, index) => {
+      post.order = index;
+      console.log(`Post ID: ${post.id}, New order: ${post.order}`); // Add this line
+    });
+    this.postService.saveData();
+  }
+
+
+  }
+
+

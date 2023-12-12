@@ -29,10 +29,9 @@ export class PostService{
         if (!Array.isArray(post.comments)) {
           post.comments = [];
         }
-        if (!Array.isArray(post.notifications)) { // Add this line
-          post.notifications = []; // Add this line
+        if (!Array.isArray(post.notifications)) {
+          post.notifications = [];
         }
-        console.log('Notifications in post:', post.notifications);
       });
       return posts;
     }
@@ -66,11 +65,10 @@ export class PostService{
 
  // Method to add a post
  async addPost(post: Post): Promise<void> {
-  post.id = uuidv4(); // Add this line
-  post.userId = await this.authService.getUserId();
+  post.id = uuidv4();
+  post.userId = post.sharedBy || await this.authService.getUserId();
   this.modifyPosts(() => this.listofPosts.push(post));
 }
-
   // Method to update a post
   updatePost(userId: string, newPost: Post): void {
     const index = this.listofPosts.findIndex(post => post && post.userId === userId);
@@ -153,8 +151,10 @@ export class PostService{
       return this.listofPosts.find(post => post && post.id === postId);
     }
 
-    searchPosts(searchTerm: string): Post[] {
-      return this.listofPosts.filter(post => post.title.toLowerCase().includes(searchTerm.toLowerCase()));
+    searchPosts(searchTerm: string, currentUserId: string): Post[] {
+      return this.listofPosts.filter(post =>
+        post.title.toLowerCase().includes(searchTerm.toLowerCase()) && post.userId !== currentUserId
+      );
     }
 
     async deleteComment(postId: string, commentIndex: number) {
@@ -176,22 +176,26 @@ export class PostService{
     }
 
     saveData(): void {
-      const postsData = this.listofPosts.reduce((acc, post) => {
-        if (post && post.userId) { // Add this line
+      const validPosts = this.listofPosts.filter(post => post !== null); // Add this line
+
+      const postsData = validPosts.reduce((acc, post) => { // Change this line
+        if (post && post.userId) {
           if (!acc[post.userId]) {
             acc[post.userId] = { posts: {} };
           }
-          acc[post.userId].posts[this.listofPosts.indexOf(post)] = post;
+          acc[post.userId].posts[post.order] = post;
         }
         return acc;
       }, {} as { [userId: string]: { posts: { [index: number]: Post } } });
+
+      console.log('Saving posts:', postsData);
 
       this.http.put('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json', postsData)
         .pipe(retry(3))
         .subscribe({
           next: () => {
             console.log('Data saved successfully');
-            console.log('Saved posts:', this.listofPosts); // Add this line
+            console.log('Saved posts:', validPosts); // Change this line
           },
           error: err => console.error('Error in saveData', err)
         });

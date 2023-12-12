@@ -17,7 +17,7 @@ export class PostEditComponent implements OnInit {
   index: string = '';
   editMode = false;
   postId: string = '';
-  post: Post = new Post('', '', '', '', '', '', new Date(), 0, [], [], '');
+  post: Post = new Post('', '', '', '', '', '', new Date(), 0, 0, [], [], '');
   // ...
 
   constructor(private postService: PostService, private router: Router, private actRoute: ActivatedRoute, private authService: AuthService) {}
@@ -80,8 +80,9 @@ async onSubmit() {
     'Christian L. Montesor',
     userEmail,
     new Date(),
-    0,
-    likes, // Add this line
+    0, // Add this line for order
+    0, // Add this line for numberoflikes
+    [], // Initialize likes as an empty array
     [], // Initialize comments as an empty array
     userId
   );

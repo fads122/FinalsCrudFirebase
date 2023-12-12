@@ -1,3 +1,5 @@
-<ng-container *ngFor="let post of filteredPosts; let i = index">
-  <app-post [post]="post" [index]='i'></app-post>
-</ng-container>
+<div cdkDropList (cdkDropListDropped)="drop($event)">
+  <div *ngFor="let post of filteredPosts; let i = index" cdkDrag>
+    <app-post [post]="post" [index]='i'></app-post>
+  </div>
+</div>

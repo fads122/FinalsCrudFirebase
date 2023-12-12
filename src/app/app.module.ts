@@ -25,6 +25,8 @@ import { NotificationListComponent } from './notification-list/notification-list
 import { NotificationService } from './notification.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
+import { UserListComponent } from './user-list/user-list.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 // import { FirebaseService } from './services/firebase.service';
 
@@ -58,6 +60,7 @@ const routes : Routes = [
     UserProfileComponent,
     NotificationComponent,
     NotificationListComponent,
+    UserListComponent,
   ],
   imports: [
     BrowserModule,
@@ -78,6 +81,7 @@ const routes : Routes = [
       appId: "1:452447375053:web:c422df9a1a296c4c85a384"
     }),
     BrowserAnimationsModule,
+    DragDropModule,
   ],
   providers: [NotificationService],
   bootstrap: [AppComponent]
