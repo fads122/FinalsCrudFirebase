@@ -23,6 +23,8 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { NotificationComponent } from './notification/notification.component';
 import { NotificationListComponent } from './notification-list/notification-list.component';
 import { NotificationService } from './notification.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog';
 
 // import { FirebaseService } from './services/firebase.service';
 
@@ -62,7 +64,7 @@ const routes : Routes = [
     MatButtonModule,
     RouterModule.forRoot(routes),
     FormsModule,
-
+    MatDialogModule,
     ReactiveFormsModule,
     HttpClientModule,
     AngularFireAuthModule,
@@ -75,6 +77,7 @@ const routes : Routes = [
       messagingSenderId: "452447375053",
       appId: "1:452447375053:web:c422df9a1a296c4c85a384"
     }),
+    BrowserAnimationsModule,
   ],
   providers: [NotificationService],
   bootstrap: [AppComponent]

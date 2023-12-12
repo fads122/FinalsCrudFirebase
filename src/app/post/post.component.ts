@@ -20,11 +20,14 @@ export class PostComponent implements OnInit {
 
   constructor(private postService: PostService, private router: Router, private authService: AuthService) { }
 
-async ngOnInit(): Promise<void> {
-  this.currentUserId = await this.authService.getUserId();
-  console.log(this.post);
-  this.isLiked = this.post?.likedByUsers.includes(this.currentUserId) || false;
-}
+  async ngOnInit(): Promise<void> {
+    this.currentUserId = await this.authService.getUserId();
+    console.log(this.post);
+    if (this.post) {
+      this.post.likedByUsers = this.post.likedByUsers || []; // Ensure likedByUsers is an array
+      this.isLiked = this.post.likedByUsers.includes(this.currentUserId);
+    }
+  }
 
   async delete() {
     const userId = await this.authService.getUserId();

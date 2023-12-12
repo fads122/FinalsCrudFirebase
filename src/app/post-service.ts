@@ -6,6 +6,8 @@ import { retry } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { BehaviorSubject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFireAuth } from "@angular/fire/compat/auth";
 
 @Injectable({providedIn: 'root'})
 export class PostService{
@@ -16,7 +18,7 @@ export class PostService{
     private searchTerm = new BehaviorSubject<string>('');
     private postDeleted = new Subject<void>();
 
-    constructor(private http: HttpClient, private authService: AuthService) { }
+    constructor(private http: HttpClient, private authService: AuthService, private firestore: AngularFirestore, private afAuth: AngularFireAuth) { }
 
 
 
@@ -92,6 +94,14 @@ export class PostService{
         } else {
           post.likedByUsers.push(userId);
           post.numberoflikes++;
+
+          // Add a notification
+          this.firestore.collection('posts').doc(postId).collection('notifications').add({
+            type: 'like',
+            userId,
+            postId,
+            timestamp: new Date()
+          });
         }
         this.listChangeEvent.emit(this.listofPosts);
         this.saveData();
@@ -102,33 +112,31 @@ export class PostService{
 
     // post.service.ts
 
-async addcomment(comment: string, commentUserId: string, postId: string) {
-  console.log('Adding comment to post with ID:', postId);
-  console.log('Current posts:', this.listofPosts.filter(post => post).map(post => post.id));
-  const post = this.listofPosts.find(post => post && post.id === postId);
-  const email = await this.authService.getUserEmail();
-  const timestamp = new Date();
+    async addcomment(comment: string, commentUserId: string, postId: string) {
+      const email = await this.authService.getUserEmail();
+      const timestamp = new Date();
 
-  if (post) {
-    if (!Array.isArray(post.comments)) {
-      post.comments = [];
+      const post = this.listofPosts.find(post => post && post.id === postId);
+      if (post) {
+        if (!Array.isArray(post.comments)) {
+          post.comments = [];
+        }
+        post.comments.unshift({ userId: commentUserId, email, comment, timestamp });
+
+        // Add a notification
+        await this.firestore.collection('posts').doc(postId).collection('notifications').add({
+          type: 'comment',
+          userId: commentUserId,
+          postId,
+          timestamp,
+        });
+
+        this.listChangeEvent.emit(this.listofPosts);
+        this.saveData();
+      } else {
+        console.error(`Cannot add comment: Post with ID ${postId} is undefined`);
+      }
     }
-    post.comments.unshift({ userId: commentUserId, email, comment, timestamp });
-
-    // Add a notification
-    if (!Array.isArray(post.notifications)) {
-      post.notifications = [];
-    }
-    post.notifications.unshift({ type: 'comment', userId: commentUserId, recipientId: post.userId, timestamp });
-
-    console.log('Notifications after adding:', post.notifications);
-
-    this.listChangeEvent.emit(this.listofPosts);
-    this.saveData();
-  } else {
-    console.error(`Cannot add comment: Post with ID ${postId} is undefined`);
-  }
-}
 
 
     setPosts(listofposts: Post[]) {

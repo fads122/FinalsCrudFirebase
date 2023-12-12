@@ -6,6 +6,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { v4 as uuidv4 } from 'uuid';
 
+
 @Component({
   selector: 'app-post-edit',
   templateUrl: './post-edit.component.html',
@@ -58,7 +59,7 @@ export class PostEditComponent implements OnInit {
     });
 
 
-    
+
 
 }
 

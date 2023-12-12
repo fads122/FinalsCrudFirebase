@@ -1,8 +1,7 @@
-// notification-list.component.ts
-
 import { Component, OnInit } from '@angular/core';
-import { NotificationService } from '../notification.service';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-notification-list',
@@ -10,24 +9,29 @@ import { AuthService } from '../auth.service';
   styleUrls: ['./notification-list.component.css']
 })
 export class NotificationListComponent implements OnInit {
-  notifications: { type: string, userId: string, timestamp: Date }[] = [];
+  notifications: { type: string, userId: string, timestamp: Date, postId: string, }[] = [];
 
-  constructor(private notificationService: NotificationService, private authService: AuthService) {}
+  constructor(private firestore: AngularFirestore, private authService: AuthService, private router: Router) { }
 
-  // notification-list.component.ts
-
-  async ngOnInit(): Promise<void> {
-    try {
-      const userId = await this.authService.getUserId();
-      console.log('Fetching notifications for user:', userId);
-
-      // Ensure that this is awaited
-      this.notifications = await this.notificationService.getNotifications(userId);
-
-      console.log('Notifications in component:', this.notifications);
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
+  async ngOnInit() {
+    const userId = await this.authService.getUserId();
+    const snapshot = await this.firestore.collectionGroup('notifications', ref => ref.where('recipientId', '==', userId)).get().toPromise();
+    if (snapshot) {
+      this.notifications = snapshot.docs.map(doc => {
+        const data = doc.data() as { type: string, userId: string, timestamp: Date, postId: string };
+        return {
+          type: data.type,
+          userId: data.userId,
+          timestamp: data.timestamp,
+          postId: data.postId
+        };
+      });
+    } else {
+      console.error('Snapshot not found');
     }
   }
 
+  goToPost(postId: string) {
+    this.router.navigate(['/post', postId]);
+  }
 }

@@ -1,164 +1,46 @@
-<style>
-  body {
-    background-color: #f5f5f5;
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-  }
+<div class="tab-content">
+  <div id="home" class="container-fluid tab-pane active"><br>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card mx-auto custom-card" id="prova">
+          <div class="row post-header col-12 py-2 px-3">
+            <div class="col-6 float-left"><h2>Post by: {{post?.authorEmail}}</h2></div>
+            <div class="col-6 float-right text-right post-number"><h4>{{post?.numberoflikes}} Likes</h4></div>
+          </div>
+          <img class="img-responsive" src="{{post?.imgPath}}" style="width: 100%;" alt="Post Image">
+          <div class="card-body px-3">
+            <h5 class="card-title">{{post?.numberoflikes}} Likes</h5>
+            <p class="card-text">{{post?.description}}</p>
+          </div>
 
-  .post-container {
-    max-width: 600px;
-    margin: 20px auto;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 16px;
-  }
-
-  h2, h3 {
-    margin-bottom: 12px;
-    color: #333;
-    text-align: center;
-  }
-
-  img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .comment-section {
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
-  }
-
-  input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-right: 8px;
-  }
-
-  button {
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    background-color: #4CAF50;
-    color: #fff;
-  }
-
-  .delete-btn {
-    color: #e74c3c;
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 8px;
-  }
-
-  .btn-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 16px;
-    width: 100%;
-  }
-
-  .btn {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .btn-primary {
-    background-color: #3498db;
-    color: #fff;
-    margin-right: 8px;
-  }
-
-  .btn-danger {
-    background-color: #e74c3c;
-    color: #fff;
-  }
-
-  .btn-success {
-    background-color: #2ecc71;
-    color: #fff;
-  }
-  p {
-  margin: 0.2em 0; /* Adjust this value to change the space between comments */
-}
-
-.comment-metadata {
-  color: gray;
-  opacity: 0.7;
-  font-size: 0.8em;
-  font-style: italic;
-}
-/* post.component.css */
-
-/* post.component.css */
-
-.btn-liked {
-  background-color: red;
-  color: white;
-}
-
-.btn-not-liked {
-  background-color: black;
-  color: white;
-}
-</style>
-
-<div class="post-container">
-
-  <section>
-    <h2>Post by: {{post?.authorEmail}}</h2>
-    <h3>{{post?.title}}</h3>
-  </section>
-
-  <section>
-    <img class="img-responsive" src="{{post?.imgPath}}" style="width: 100%;" alt="Post Image">
-  </section>
-
-  <section>
-    <h3>{{post?.description}}</h3>
-  </section>
-
-  <section class="comment-section">
-    <input type="text" [(ngModel)]="comment" name="comment" placeholder="Add a comment">
-    <button (click)="submitComment()">Add Comment</button>
-  </section>
-
-  <section>
-    <div *ngFor="let comment of post?.comments; let i = index">
-      <p>{{ comment.comment }}&nbsp;&nbsp;
-        <span class="comment-metadata">{{ comment.email }} at {{ comment.timestamp | date:'short' }}</span>
-        <button *ngIf="comment.userId === currentUserId" (click)="deleteComment(i)" class="delete-btn">Delete</button>
-      </p>
+<div class="row post-header px-3 pb-3">
+  <div class="col-1 float-left text-left">
+    <i class="fas fa-heart heart-icon" [ngClass]="{'liked': isLiked}" (click)="onClick()"></i>
+  </div>
+  <div class="col-10 float-left text-left">
+    <div class="input-group">
+      <input type="text" [(ngModel)]="comment" name="comment" class="comment-input" placeholder="Add a comment">
+      <div class="input-group-append">
+        <button (click)="submitComment()" class="comment-btn">Post</button>
+      </div>
     </div>
-  </section>
-
-  <section class="btn-container">
-    <button class="btn btn-primary" *ngIf="post?.userId === currentUserId" (click)="onEdit()">Edit</button>
-    <button class="btn btn-danger" *ngIf="post?.userId === currentUserId" (click)="delete()">Delete</button>
-  </section>
-
-  <section>
-<button [class.btn-liked]="isLiked" [class.btn-not-liked]="!isLiked" (click)="onClick()" class="btn" style="font-size: 16px;">Likes: {{post?.numberoflikes}}</button>
-  </section>
-
+  </div>
+  <div class="col-1 float-right text-right"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></div>
 </div>
+
+<div class="comments-list">
+  <div *ngFor="let comment of post?.comments; let i = index" class="comment-item">
+    <p>{{ comment.comment }}&nbsp;&nbsp;
+      <span class="comment-metadata">{{ comment.email }} at {{ comment.timestamp | date:'short' }}</span>
+      <button *ngIf="comment.userId === currentUserId" (click)="deleteComment(i)" class="delete-btn">
+        <i class="fa fa-trash-alt"></i>
+      </button>
+    </p>
+  </div>
+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+

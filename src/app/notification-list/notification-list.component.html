@@ -3,8 +3,8 @@
     <span role="img" aria-label="bell">🔔</span>
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" *ngFor="let notification of notifications">
-      {{ notification.type === 'comment' ? 'User ' + notification.userId + ' commented on your post' : 'Other notification type' }} at {{ notification.timestamp | date:'short' }}
+    <a class="dropdown-item" *ngFor="let notification of notifications" (click)="goToPost(notification.postId)">
+      {{ notification.type === 'comment' ? 'User ' + notification.userId + ' commented on your post' : 'User ' + notification.userId + ' liked your post' }} at {{ notification.timestamp | date:'short' }}
     </a>
     <a class="dropdown-item" *ngIf="notifications.length === 0">No notifications</a>
   </div>

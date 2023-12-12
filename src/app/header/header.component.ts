@@ -3,6 +3,9 @@ import { BackEndService } from '../back-end.service';
 import { PostService } from '../post-service';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import { ModalService } from '../modal.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PostEditComponent } from '../post-edit/post-edit.component';
 
 @Component({
   selector: 'app-header',
@@ -14,13 +17,17 @@ export class HeaderComponent implements OnInit {
   private _searchTerm: string = '';
   userEmail: string = '';
 
-  constructor(private postService: PostService, private backEndService: BackEndService, private authService: AuthService, private router: Router){
+  constructor(private postService: PostService, private backEndService: BackEndService, private authService: AuthService, private router: Router, private dialog: MatDialog){
     this.authService.getAuthState().subscribe(user => {
       this.userEmail = user?.email || ''; // Add this line
     });
   }
 
   ngOnInit(): void {
+  }
+
+  openPostForm() {
+    this.dialog.open(PostEditComponent);
   }
 
   onSave(){
