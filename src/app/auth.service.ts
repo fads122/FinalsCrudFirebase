@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AuthService {
 
 
 
-  constructor(private afAuth: AngularFireAuth, private router: Router) {
+  constructor(private afAuth: AngularFireAuth, private router: Router, private firestore: AngularFirestore) {
     const app = initializeApp({
       apiKey: "AIzaSyBjAbdwCUe4w3ubimXtnovIKYU6K1-qAig",
       authDomain: "firecrud-2ee77.firebaseapp.com",
@@ -61,14 +62,34 @@ export class AuthService {
   }
 
 
-   async register(email: string, password: string) {
-    return await this.afAuth.createUserWithEmailAndPassword(email, password);
+  async register(email: string, password: string) {
+    const result = await this.afAuth.createUserWithEmailAndPassword(email, password);
+    if (result.user) {
+      await this.firestore.collection('users').doc(result.user.uid).set({
+        email: email,
+        savedPosts: []
+        // add any other user details you want to store
+      });
+    }
   }
 
   async login(email: string, password: string) {
     const result = await this.afAuth.signInWithEmailAndPassword(email, password);
-    localStorage.setItem('user', JSON.stringify(result.user));
-    this.router.navigate(['/post-list']);
+    if (result.user) {
+      const uid = result.user.uid;
+      if (uid) {
+        this.firestore.collection('users').doc(uid).get().subscribe(userDoc => {
+          if (!userDoc.exists) {
+            console.error('User document not found');
+          }
+        });
+        this.router.navigate(['/post-list']); // Add this line
+      } else {
+        console.error('User ID is undefined');
+      }
+    } else {
+      console.error('User not found');
+    }
   }
 
   async logout() {

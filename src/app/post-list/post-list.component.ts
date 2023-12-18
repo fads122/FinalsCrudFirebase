@@ -4,6 +4,9 @@ import { PostService } from '../post-service';
 import { AuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { UserService } from '../user.service';
+import { VideoService } from '../video.service';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-post-list',
@@ -15,20 +18,22 @@ export class PostListComponent implements OnInit {
   filteredPosts: Post[] = [];
   searchTerm: string = '';
   authSub: Subscription;
+  videoUrl: string = '';
+  otherUsersVideoUrls: string[] = [];
 
 
 
-  constructor(private postService: PostService, private authService: AuthService) {
+  constructor(private postService: PostService, private authService: AuthService, private videoService: VideoService,  private firestore: AngularFirestore) {
     this.authSub = new Subscription();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.authSub = this.authService.getAuthState().subscribe(user => {
       if (user) {
         this.postService.getPost().then(posts => {
-          this.posts = posts;
-          this.filteredPosts = [...posts];
-          console.log('Posts:', this.posts); // Add this line
+          this.posts = posts.sort((a, b) => a.order - b.order); // Sort the posts by their order property
+          this.filteredPosts = [...this.posts];
+          console.log('Posts:', this.posts);
         });
       }
     });
@@ -44,10 +49,27 @@ export class PostListComponent implements OnInit {
       this.postService.getPost().then(posts => {
         this.posts = posts;
         this.filteredPosts = [...posts];
-        console.log('Posts after deletion:', this.posts); // Add this line
+        console.log('Posts after deletion:', this.posts);
       });
     });
+
+    // Fetch the video URL from Firestore
+    const userId = await this.authService.getUserId();
+  if (userId) {  // Add this check
+    const userDoc = await this.firestore.collection('users').doc(userId).get().toPromise();
+    if (userDoc?.exists) {
+      const userData: any = userDoc.data();
+      if (userData) {
+        this.videoUrl = userData.videoUrl;
+      }
+    }
   }
+  await this.fetchOtherUsersVideos();
+}
+
+async fetchOtherUsersVideos() {
+  this.otherUsersVideoUrls = await this.videoService.getAllUsersVideoUrls();
+}
 
   async onSearch(): Promise<void> {
     const userId = await this.authService.getUserId();
@@ -63,6 +85,50 @@ export class PostListComponent implements OnInit {
     });
     this.postService.saveData();
   }
+
+  async onRecordVideo() {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+      // Display the stream in a video element
+      const videoElement = document.querySelector('video');
+      if (videoElement) {
+        videoElement.srcObject = stream;
+        videoElement.play();
+      }
+
+      const mediaRecorder = new MediaRecorder(stream);
+      const chunks: BlobPart[] = [];
+
+      mediaRecorder.ondataavailable = event => {
+        chunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(chunks, { type: 'video/mp4' });
+        const file = new File([blob], 'video.mp4', { type: 'video/mp4' });
+        this.videoService.uploadVideo(file, 'videos').then(async url => {
+          // Wait for 5 seconds before setting videoUrl
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          this.videoUrl = url;
+          console.log('Video URL:', this.videoUrl);
+          // Save the URL to the post in Firestore
+          const userId = await this.authService.getUserId();
+      if (userId) {  // Add this check
+        await this.firestore.collection('users').doc(userId).update({ videoUrl: url });
+      }
+        });
+      };
+
+      mediaRecorder.start();
+
+      setTimeout(() => {
+        mediaRecorder.stop();
+        if (videoElement) {
+          videoElement.srcObject = null;
+        }
+      }, 5000); // Record for 5 seconds
+    });
+  }
+
 
 
   }

@@ -5,7 +5,7 @@
         <div class="card mx-auto custom-card" id="prova">
           <div class="row post-header col-12 py-2 px-3">
             <div class="col-6 float-left"><h2>Post by: {{post?.authorEmail}}</h2></div>
-            <div class="col-6 float-right text-right post-number"><h4>{{post?.numberoflikes}} Likes</h4></div>
+            <div class="col-6 float-right text-right post-number"><button *ngIf="post?.id" (click)="savePost(post?.id)">Save Post</button></div>
           </div>
           <img class="img-responsive" src="{{post?.imgPath}}" style="width: 100%;" alt="Post Image">
           <div class="card-body px-3">

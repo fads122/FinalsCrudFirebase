@@ -1,11 +1,30 @@
-<!-- Add this HTML in your component's template file -->
-<div class="user-list">
-  <h2>Friend Suggestions</h2>
-  <div *ngFor="let user of users" class="user-item">
-    <p>{{ user.email }}</p>
-    <button>Add Friend</button>
+<div class="profile-header">
+  <img [src]="coverImageUrl" alt="Cover Photo">
+  <input type="file" (change)="onCoverImageSelected($event)">
+  <div class="profile-image">
+    <img [src]="profileImageUrl" alt="Profile Picture">
+    <input type="file" (change)="onProfileImageSelected($event)">
   </div>
 </div>
+
+<h2>Users</h2>
+<app-user-list></app-user-list>
+<div *ngFor="let user of users" class="user-item">
+  <p>{{ user.email }}</p>
+  <button>Add Friend</button>
+</div>
+
+
+<!-- Section for saved posts -->
+<h2>Saved Posts</h2>
+<div class="user-list">
+  <div *ngFor="let post of savedPosts">
+    <app-post [post]="post"></app-post>
+  </div>
+</div>
+
+<!-- Section for user's posts -->
+<h2>My Posts</h2>
 <div *ngFor="let post of posts" class="post-container">
   <h2>{{ post.title }}</h2>
   <p>{{ post.description }}</p>
@@ -17,11 +36,14 @@
     <button (click)="onClick(post.id)" class="like-button">Likes: {{ post?.numberoflikes }}</button>
     <button (click)="deletePost(post.id)" class="delete-post-button">Delete Post</button>
   </section>
-  <input type="text" [(ngModel)]="comment" name="comment" placeholder="Add a comment">
-  <button (click)="submitComment(comment, post.id)" class="comment-button">Add Comment</button>
+  <input type="text" [(ngModel)]="comments[post.id]" name="comment" placeholder="Add a comment">
+<button (click)="submitComment(post.id)" class="comment-button">Add Comment</button>
 
   <div *ngFor="let comment of post.comments; let i = index" class="comment-container">
     <p>{{ comment.comment }}</p>
     <button (click)="deleteComment(post.id, i)" class="delete-comment-button">Delete Comment</button>
   </div>
 </div>
+
+<!-- Section for user list -->
+

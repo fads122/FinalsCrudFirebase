@@ -14,26 +14,18 @@
         </li>
       </ul>
       <div class="search-container">
-        <input type="text" [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search posts by title">
-        <button class="btn btn-primary search-button" type="button" (click)="onSearchClick()">
-          <span role="img" aria-label="search">🔍</span>
-        </button>
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search posts by title">
       </div>
       <form class="d-flex">
         <app-notification-list></app-notification-list>
-        <div class="dropdown" style="margin-right: 75px;">
-          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-            Menu
-          </button>
-          <span class="navbar-text">
-            Logged in as: {{ userEmail }}
-          </span>
-          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li><button class="dropdown-item" (click)="goToProfile()">Go to Profile</button></li>
-            <li><button class="dropdown-item" (click)="onLogout()">Logout</button></li>
-          </ul>
-        </div>
+
+            <button class="dropdown-item" (click)="goToProfile()">Go to Profile</button>
+            <button class="dropdown-item" (click)="onLogout()">Logout</button>
+            <span class="navbar-text">
+              Logged in as: {{ userEmail }}
+            </span>
       </form>
+      
     </div>
   </div>
 </nav>

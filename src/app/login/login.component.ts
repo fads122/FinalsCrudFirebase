@@ -13,7 +13,8 @@ export class LoginComponent {
 
   constructor(private authService: AuthService) { }
 
-  async login(email: string, password: string) {
+  async login(event: Event, email: string, password: string) {
+    event.preventDefault();
     try {
       await this.authService.login(email, password);
     } catch (error) {

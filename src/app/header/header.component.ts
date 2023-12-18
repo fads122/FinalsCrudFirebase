@@ -6,6 +6,9 @@ import { Router } from '@angular/router';
 import { ModalService } from '../modal.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PostEditComponent } from '../post-edit/post-edit.component';
+import { Post } from '../post.model';
+import { NotificationService } from '../notification.service'; // Import NotificationService
+
 
 @Component({
   selector: 'app-header',
@@ -16,14 +19,22 @@ export class HeaderComponent implements OnInit {
   @Output() searchTermChange = new EventEmitter<string>();
   private _searchTerm: string = '';
   userEmail: string = '';
+  posts: Post[] = [];
+  notifications: { type: string, userId: string, timestamp: Date }[] = [];
 
-  constructor(private postService: PostService, private backEndService: BackEndService, private authService: AuthService, private router: Router, private dialog: MatDialog){
+  constructor(private postService: PostService, private backEndService: BackEndService, private authService: AuthService, private router: Router, private dialog: MatDialog, private notificationService: NotificationService){
     this.authService.getAuthState().subscribe(user => {
       this.userEmail = user?.email || ''; // Add this line
     });
   }
 
   ngOnInit(): void {
+    this.authService.getAuthState().subscribe(async user => {
+      this.userEmail = user?.email || '';
+      if (user) {
+        this.notifications = await this.notificationService.getNotifications(user.uid);
+      }
+    });
   }
 
   openPostForm() {
@@ -60,10 +71,15 @@ export class HeaderComponent implements OnInit {
     return this._searchTerm;
   }
 
-  onSearch(): void {
+  async onSearch(): Promise<void> {
     this.postService.setSearchTerm(this.searchTerm);
+    const userId = await this.authService.getUserId();
+    this.posts = this.postService.searchPosts(this.searchTerm, userId);
   }
-  onSearchClick(): void {
+
+  async onSearchClick(): Promise<void> {
     this.postService.setSearchTerm(this.searchTerm);
+    const userId = await this.authService.getUserId();
+    this.posts = this.postService.searchPosts(this.searchTerm, userId);
   }
 }

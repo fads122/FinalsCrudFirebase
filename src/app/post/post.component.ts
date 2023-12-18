@@ -4,6 +4,8 @@ import { PostService } from '../post-service';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { Auth } from '@firebase/auth';
+import { UserService } from '../user.service';
+
 
 @Component({
   selector: 'app-post',
@@ -18,7 +20,7 @@ export class PostComponent implements OnInit {
   currentUserId: string = '';
   isLiked = false;
 
-  constructor(private postService: PostService, private router: Router, private authService: AuthService) { }
+  constructor(private postService: PostService, private router: Router, private authService: AuthService, private userService: UserService) { }
 
   async ngOnInit(): Promise<void> {
     this.currentUserId = await this.authService.getUserId();
@@ -36,7 +38,12 @@ export class PostComponent implements OnInit {
     }
   }
 
-
+  async savePost(postId?: string) {
+    if (postId) {
+      const userId = await this.authService.getUserId();
+      this.userService.addSavedPost(postId);
+    }
+  }
 
   async onEdit() {
     const userId = await this.authService.getUserId();

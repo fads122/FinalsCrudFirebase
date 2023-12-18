@@ -1,11 +1,5 @@
-<div class="dropdown">
-  <button class="btn btn-light dropdown-toggle notification-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span role="img" aria-label="bell">🔔</span>
-  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" *ngFor="let notification of notifications" (click)="goToPost(notification.postId)">
-      {{ notification.type === 'comment' ? 'User ' + notification.userId + ' commented on your post' : 'User ' + notification.userId + ' liked your post' }} at {{ notification.timestamp | date:'short' }}
-    </a>
-    <a class="dropdown-item" *ngIf="notifications.length === 0">No notifications</a>
-  </div>
+<div *ngFor="let notification of notifications">
+  <p (click)="goToPost(notification.postId)">
+    {{ notification.type === 'comment' ? 'User ' + notification.userId + ' commented on your post' : 'User ' + notification.userId + ' liked your post' }} at {{ notification.timestamp | date:'short' }}
+  </p>
 </div>

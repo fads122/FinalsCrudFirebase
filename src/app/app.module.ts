@@ -27,6 +27,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { UserListComponent } from './user-list/user-list.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 
 // import { FirebaseService } from './services/firebase.service';
 
@@ -39,7 +40,7 @@ const routes : Routes = [
   { path: 'post-add', component: PostEditComponent},
   { path: 'authentication', component: AuthComponent},
   { path: 'post-edit/:id', component: PostEditComponent },
-  { path: 'login', component: LoginComponent},
+  { path: '/login', component: LoginComponent},
   { path: 'register', component: RegisterComponent},
   { path: 'user-profile', component: UserProfileComponent },
 
@@ -61,6 +62,7 @@ const routes : Routes = [
     NotificationComponent,
     NotificationListComponent,
     UserListComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -69,6 +71,7 @@ const routes : Routes = [
     FormsModule,
     MatDialogModule,
     ReactiveFormsModule,
+    AngularFireStorageModule,
     HttpClientModule,
     AngularFireAuthModule,
     AngularFireModule.initializeApp({

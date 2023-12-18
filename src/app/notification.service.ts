@@ -12,14 +12,14 @@ export class NotificationService {
 
   // notification.service.ts
 
-async getNotifications(userId: string): Promise<{ type: string, userId: string, timestamp: Date }[]> {
-  console.log('Fetching notifications for user:', userId);
-  const posts = await this.postService.getPost();
-  const notifications = posts.flatMap(post => post.notifications || []);
-  console.log('All notifications:', notifications);
-  const userNotifications = notifications.filter(notification => notification.recipientId === userId);
-  console.log('User notifications:', userNotifications);
-  return userNotifications;
-}
+  async getNotifications(userId: string): Promise<{ type: string, userId: string, timestamp: Date }[]> {
+    console.log('Fetching notifications for user:', userId);
+    const posts = await this.postService.getPost();
+    const notifications = posts.flatMap(post => post.notifications || []);
+    console.log('All notifications:', notifications);
+    const userNotifications = notifications.filter(notification => notification.recipientId === userId);
+    console.log('User notifications:', userNotifications);
+    return userNotifications;
+  }
 
 }

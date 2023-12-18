@@ -68,6 +68,15 @@ export class PostService{
   post.id = uuidv4();
   post.userId = post.sharedBy || await this.authService.getUserId();
   this.modifyPosts(() => this.listofPosts.push(post));
+  const userId = await this.authService.getUserId();
+  const userDoc = await this.firestore.collection('users').doc(userId).get().toPromise();
+  if (userDoc?.exists) {
+    let userData = userDoc.data() as { posts: { [key: string]: Post } }; // Change this line
+    if (userData && userData.posts) {
+      userData.posts[post.id] = post; // Add the new post to the existing posts
+      await this.firestore.collection('users').doc(userId).update({ posts: userData.posts }); // Update only the posts field
+    }
+  }
 }
   // Method to update a post
   updatePost(userId: string, newPost: Post): void {
@@ -122,10 +131,10 @@ export class PostService{
         post.comments.unshift({ userId: commentUserId, email, comment, timestamp });
 
         // Add a notification
-        await this.firestore.collection('posts').doc(postId).collection('notifications').add({
+        post.notifications.push({
           type: 'comment',
           userId: commentUserId,
-          postId,
+          recipientId: post.userId, // Add this line
           timestamp,
         });
 
@@ -152,7 +161,8 @@ export class PostService{
     }
 
     searchPosts(searchTerm: string, currentUserId: string): Post[] {
-      return this.listofPosts.filter(post =>
+      const validPosts = this.listofPosts.filter(post => post !== null); // Add this line
+      return validPosts.filter(post =>
         post.title.toLowerCase().includes(searchTerm.toLowerCase()) && post.userId !== currentUserId
       );
     }
@@ -177,19 +187,19 @@ export class PostService{
 
     saveData(): void {
       const validPosts = this.listofPosts.filter(post => post !== null); // Add this line
-
+    
       const postsData = validPosts.reduce((acc, post) => { // Change this line
         if (post && post.userId) {
           if (!acc[post.userId]) {
-            acc[post.userId] = { posts: {} };
+            acc[post.userId] = { posts: [] };
           }
-          acc[post.userId].posts[post.order] = post;
+          acc[post.userId].posts.push(post);
         }
         return acc;
-      }, {} as { [userId: string]: { posts: { [index: number]: Post } } });
-
+      }, {} as { [userId: string]: { posts: Post[] } });
+    
       console.log('Saving posts:', postsData);
-
+    
       this.http.put('https://firecrud-2ee77-default-rtdb.asia-southeast1.firebasedatabase.app/posts.json', postsData)
         .pipe(retry(3))
         .subscribe({

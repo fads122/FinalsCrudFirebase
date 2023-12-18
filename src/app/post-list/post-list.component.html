@@ -1,3 +1,10 @@
+
+<button (click)="onRecordVideo()" class="record-button">Record Video</button>
+<video [src]="videoUrl" controls class="reel-video"></video>
+<h2>Other Users' Videos</h2>
+<video *ngFor="let url of otherUsersVideoUrls" [src]="url" controls class="reel-video"></video>
+<h1>Friends List</h1>
+<app-user-list></app-user-list>
 <div cdkDropList (cdkDropListDropped)="drop($event)">
   <div *ngFor="let post of filteredPosts; let i = index" cdkDrag>
     <app-post [post]="post" [index]='i'></app-post>
